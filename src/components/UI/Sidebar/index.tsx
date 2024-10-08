@@ -5,23 +5,24 @@ import { useState } from "react";
 import { Image } from "@nextui-org/react";
 import { Edit } from "lucide-react";
 
+import { useUser } from "@/src/context/user.provider";
+
 import PostCreateModal from "../PostCreateModal";
 import EditNameModal from "../EditProfileModal";
 
 import { SidebarOptions } from "./SidebarOptions";
 import { adminLinks, userLinks } from "./constants";
 
-import { useUser } from "@/src/context/user.provider";
 
 const Sidebar = () => {
   const { user } = useUser();
   const [isModalOpen, setModalOpen] = useState(false); // State to manage modal visibility
 
-  const handleOpenModal = () => setModalOpen(true);
+  const handleOpenModal = () => setModalOpen(true); 
   const handleCloseModal = () => setModalOpen(false);
 
   return (
-    <div className="rounded-2xl max-w-sm lg:fixed">
+    <div className="rounded-2xl max-w-sm xl:fixed">
       <div className="rounded-xl bg-gray-700 p-5 shadow-lg hover:shadow-xl transition-shadow duration-300">
         <div className="relative w-full rounded-xl overflow-hidden mb-5">
           <Image

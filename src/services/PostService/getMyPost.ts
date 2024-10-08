@@ -16,6 +16,19 @@ export const getMyPosts = async () => {
     return res.json();
 };
 
+export const getMyFavouritePosts = async () => {
+    const accessToken = cookies().get("accessToken")?.value;
+    console.log(accessToken)
+
+    const res = await fetch(`${envConfig.baseApi}/users/favorite-posts`, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`, 
+        },
+    });
+
+    return res.json();
+};
+
 export const getSingleUser = async (userId: string) => {
     const accessToken = cookies().get("accessToken")?.value;
 

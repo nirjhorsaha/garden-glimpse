@@ -1,5 +1,4 @@
-/* eslint-disable prettier/prettier */
-const ProfilePage =() => {
+const ProfilePage = () => {
   return (
     <div>
       <h1> This is, ProfilePage component! </h1>

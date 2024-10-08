@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-
+/* eslint-disable prettier/prettier */
 import {
     Modal,
     ModalContent,
@@ -27,24 +27,50 @@ const categories = [
     { value: "others", label: "Others" },
 ];
 
-export default function PostCreateModal() {
+interface PostCreateModalProps {
+    post?: {
+        title: string;
+        content: string;
+        category: string;
+        images?: string[]; // Assuming images is an array
+        isPremium?: boolean;
+    };
+    onSubmit?: (data: FieldValues) => void; // Add a callback prop for form submission
+}
+
+export default function PostCreateModal({ post, onSubmit }: PostCreateModalProps) {
     const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
-    const { register, handleSubmit } = useForm(); // Initialize useForm
+    const { register, handleSubmit, reset } = useForm();
+
+    // Open modal and reset form for editing
+    const handleOpen = () => {
+        if (post) {
+            reset({
+                title: post.title,
+                content: post.content,
+                category: post.category,
+                images: post.images, // If applicable
+                premium: post.isPremium,
+            });
+        }
+        onOpen();
+    };
 
     // Handle form submission
-    const onSubmit: SubmitHandler<FieldValues> = (data) => {
-        console.log(data); // Log the form data
+    const handleFormSubmit: SubmitHandler<FieldValues> = (data) => {
+        onSubmit(data); // Pass the data to the onSubmit prop
         onClose(); // Close the modal after submission
     };
 
     return (
         <>
             <Button
-                aria-label="Create Post"
-                className="mt-2 w-full rounded-md bg-blue-500 text-white hover:bg-blue-600"
-                onPress={onOpen}
+                aria-label={post ? "Edit Post" : "Create Post"}
+                className="mt-2 w-full rounded-m"
+                color={post? "primary": "success"}
+                onPress={handleOpen}
             >
-                <Plus size={16} /> Create Post
+                <Plus size={16} /> {post ? "Edit Post" : "Create Post"}
             </Button>
             <Modal
                 aria-labelledby="create-post-modal"
@@ -56,10 +82,10 @@ export default function PostCreateModal() {
                     {() => (
                         <>
                             <ModalHeader className="flex flex-col gap-1 p-4" id="create-post-modal">
-                                Create a Post
+                                {post ? "Edit Post" : "Create a Post"}
                             </ModalHeader>
                             <ModalBody className="p-4">
-                                <form onSubmit={handleSubmit(onSubmit)}> {/* Wrap inputs in a form */}
+                                <form onSubmit={handleSubmit(handleFormSubmit)}> {/* Wrap inputs in a form */}
                                     <Input
                                         aria-required="true"
                                         className="mb-4" // Add margin bottom
@@ -106,7 +132,7 @@ export default function PostCreateModal() {
                                             register("image").onChange(e); // Call the registered change handler
                                         }}
                                     />
-                                    <Checkbox classNames={{ label: "text-small" }} {...register("premium")}>
+                                    <Checkbox className="text-small" {...register("premium")}>
                                         Mark as Premium
                                     </Checkbox>
                                 </form>
@@ -124,12 +150,11 @@ export default function PostCreateModal() {
                                     className="ml-2"
                                     color="primary"
                                     type="button" 
-                                    onClick={handleSubmit(onSubmit)} 
+                                    onClick={handleSubmit(handleFormSubmit)} 
                                 >
-                                    Create Post
+                                    {post ? "Update Post" : "Create Post"}
                                 </Button>
                             </ModalFooter>
-
                         </>
                     )}
                 </ModalContent>
@@ -137,3 +162,4 @@ export default function PostCreateModal() {
         </>
     );
 }
+

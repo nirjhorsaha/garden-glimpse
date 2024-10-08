@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
-declare module "lucide-react" {
-  import { SVGProps } from "react";
+declare module 'lucide-react' {
+  import { SVGProps } from 'react';
 
   interface LucideProps extends SVGProps<SVGSVGElement> {
     size?: string | number;
@@ -20,4 +20,6 @@ declare module "lucide-react" {
   export const ChevronDown: (props: LucideProps) => JSX.Element;
   export const Edit: (props: LucideProps) => JSX.Element;
   export const ShieldCheck: (props: LucideProps) => JSX.Element;
+  export const Bookmark: (props: LucideProps) => JSX.Element;
+  export const Trash2: (props: LucideProps) => JSX.Element;
 }

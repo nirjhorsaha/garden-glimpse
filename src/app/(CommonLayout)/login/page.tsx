@@ -5,7 +5,7 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { Checkbox, Input } from "@nextui-org/react";
+import { Checkbox, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@nextui-org/react";
 import { Button } from "@nextui-org/button";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,6 +21,8 @@ import { useUser } from "@/src/context/user.provider";
 
 const LoginPage = () => {
   const [isVisible, setIsVisible] = React.useState(false);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
 
   const toggleVisibility = () => setIsVisible(!isVisible);
 
@@ -40,7 +42,7 @@ const LoginPage = () => {
     //! only for development purpose
     defaultValues: {
       email: "nirjhor.badhan25@gmail.com",
-      password: "test-password",
+      password: "nir-password",
 
     },
   });
@@ -139,9 +141,13 @@ const LoginPage = () => {
             >
               Remember me
             </Checkbox>
-            <Link className="text-sm" color="primary" href="/auth/forget-password">
+            <button
+              className="text-sm text-blue-500 cursor-pointer hover:underline focus:outline-none"
+              type="button"
+              onClick={onOpen}
+            >
               Forgot password?
-            </Link>
+            </button>
           </div>
 
           <Button
@@ -160,6 +166,27 @@ const LoginPage = () => {
           Don&lsquo;t have an account? <span className="font-bold bg-gradient-to-r from-sky-500 from-30% to-green-500 to-70% inline-block text-transparent bg-clip-text"><Link href={"/signup"}>Register</Link></span>
         </div>
       </div>
+      {/* Forgot Password Modal */}
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader>Forgot Password?</ModalHeader>
+              <ModalBody>
+                <p>Are you sure you want to send the reset instructions to your email.?</p>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="flat" onPress={onClose}>
+                  Close
+                </Button>
+                <Button color="success"  onPress={onClose}>
+                  Send
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </div>
   );
 };

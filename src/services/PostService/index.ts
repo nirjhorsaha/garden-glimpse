@@ -4,6 +4,7 @@ import { getCookies } from "cookies-next";
 
 import envConfig from "@/src/config/envConfig";
 import { IPost, IUser } from "@/src/types";
+import axiosInstance from "@/src/lib/AxiosInstance";
 
 export const getAllPosts = async () => {
     const fetchOption = {
@@ -78,5 +79,32 @@ export const updateUserProfile = async (data: IUser) => {
     }
 
     return res.json();
+};
+
+
+export const savedPost = async (postId: string) => {
+    const cookies = getCookies(); 
+    const dataToSend = { postId }; 
+
+    const fetchOptions = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${cookies.accessToken}`, 
+        },
+        data: JSON.stringify( postId ), 
+    };
+
+    try {
+        const res = await axiosInstance.post(`${envConfig.baseApi}/users/favorite-post`,  dataToSend, 
+            {
+                headers: fetchOptions.headers,
+            });
+
+        return res.data; // Return the response data
+    } catch (error) {
+        console.error("Error saving post:", error);
+        throw error; 
+    }
 };
 

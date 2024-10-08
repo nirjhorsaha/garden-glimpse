@@ -1,5 +1,4 @@
 /* eslint-disable prettier/prettier */
-
 import { getAllPosts } from "../../../services/PostService";
 import { IPost } from "../../../types";
 import { PostCard } from "../../UI/Postcard";

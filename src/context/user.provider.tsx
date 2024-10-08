@@ -10,9 +10,10 @@ import {
     useEffect,
     useState,
 } from "react";
+import { FieldValues } from "react-hook-form";
 
 import { IUser } from "../types";
-import { getCurrentUser } from "../services/AuthServices";
+import { getCurrentUser, loginUser } from "../services/AuthServices";
 
 const UserContext = createContext<IUserProviderValues | undefined>(undefined);
 

@@ -1,20 +1,39 @@
 /* eslint-disable prettier/prettier */
 'use client'
 import { useState } from "react";
-import { Image } from "@nextui-org/react";
-import { ChevronUp, ChevronDown } from "lucide-react";
+import { Button, Image } from "@nextui-org/react";
+import { ChevronUp, ChevronDown, Edit } from "lucide-react";
 import { useRouter } from "next/navigation";
 
+import { useUser } from "@/src/context/user.provider";
+
 import { IPost } from "../../types";
+import PostCreateModal from "./PostCreateModal";
 
 interface PostCardProps {
     post: IPost;
 }
 
 export const PostCard: React.FC<PostCardProps> = ({ post }) => {
-    // console.log(post)
+    const [isModalOpen, setModalOpen] = useState(false);
+
+    const handleEditSubmit = async (data: IPost) => {
+        // Here, you'd typically call your API to update the post with the new data
+        console.log('Updating post with data:', data);
+        // Call your API endpoint to update the post
+        // Example: await updatePostAPI(post.id, data);
+
+        // After successful update, you may want to refresh the post data or provide feedback
+        setModalOpen(false); // Close the modal after submission
+    };
+
+
+    console.log(post.authorId)
     const [isExpanded, setIsExpanded] = useState(false);
     const router = useRouter(); // Initialize router
+    const { user, setIsLoading: userLoading } = useUser()
+
+    console.log(user?.userId)
 
 
     const toggleContent = () => {
@@ -37,8 +56,8 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
             className="group w-full border border-gray-300 dark:border-gray-700 rounded-2xl p-4 lg:p-6 flex flex-col md:flex-row items-start md:gap-6 cursor-pointer"
             type="button"
             onClick={handleCardClick}
-
         >
+
             {/* Left Side Content */}
             <div className="flex-1">
                 <div className="mb-3">
@@ -59,11 +78,25 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
                                 }).format(new Date(post?.createdAt))}
                             </span>
                         </div>
+                     
                         {post.isPremium && (
                             <span className="bg-yellow-500 text-white font-medium text-xs px-2.5 py-0.5 rounded-full">
                                 Premium
                             </span>
                         )}
+                           {/* Conditionally render the edit modal based on the author ID */}
+                           {/* {post.authorId?._id === user?.userId && (
+                            <>
+                                <Edit size={16} className="mr-1" />
+                                <PostCreateModal
+                                    post={post}
+                                    onSubmit={handleEditSubmit}
+                                    isOpen={isModalOpen}
+                                    onOpenChange={() => setModalOpen(!isModalOpen)}
+                                />
+                            </>
+                        )} */}
+
                     </div>
                 </div>
                 <h4 className="text-xl text-gray-900 dark:text-white font-medium leading-8 mb-5 text-left">
@@ -79,7 +112,8 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
                                 {post.content.length > MAX_CHARACTERS && (
                                     <button
                                         className="text-blue-500 hover:underline"
-                                        onClick={toggleContent}
+                                        // onClick={toggleContent}
+                                        onClick={handleCardClick}
                                     >
                                         See more
                                     </button>

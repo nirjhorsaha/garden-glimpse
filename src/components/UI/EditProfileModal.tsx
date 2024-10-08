@@ -3,7 +3,7 @@ import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input
 import { useForm } from "react-hook-form";
 import { useEffect } from "react";
 
-import { useUser } from "@/src/context/user.provider"; // Adjust the import based on your context path
+import { useUser } from "@/src/context/user.provider"; 
 import { updateUserProfile } from "@/src/services/PostService";
 import { IUser } from "@/src/types";
 

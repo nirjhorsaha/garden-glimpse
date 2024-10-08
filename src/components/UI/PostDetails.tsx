@@ -1,20 +1,33 @@
+/* eslint-disable no-console */
 /* eslint-disable prettier/prettier */
 "use client";
 import { Image } from "@nextui-org/react";
-import { ChevronUp, ChevronDown, Edit, Trash2 } from "lucide-react";
+import { ChevronUp, ChevronDown, Edit, Trash2, Bookmark } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
+
+import { updatePost, savedPost } from "@/src/services/PostService";
+import { useUser } from "@/src/context/user.provider";
 
 import { IPost } from "../../types";
 
-import { updatePost, getComments, addComment, updateComment, deleteComment } from "@/src/services/PostService";
+import PostCreateModal from "./PostCreateModal";
+
 
 interface PostCardProps {
     post: IPost;
 }
 
 export const PostDetailsCard: React.FC<PostCardProps> = ({ post }) => {
-    const router = useRouter(); // Initialize router
+    const router = useRouter();
+
+    const { user } = useUser()
+
+    // console.log(post.authorId)
+    // console.log(user?.userId)
+
+
     const [upVoteCount, setUpVoteCount] = useState(post.upVoteCount || 0);
     const [downVoteCount, setDownVoteCount] = useState(post.downVoteCount || 0);
     const [hasVoted, setHasVoted] = useState(false);
@@ -23,11 +36,20 @@ export const PostDetailsCard: React.FC<PostCardProps> = ({ post }) => {
     const [editingComment, setEditingComment] = useState(null);
     const [editedComment, setEditedComment] = useState("");
 
+
+    const [isModalOpen, setModalOpen] = useState(false);
+
+    const handleEditSubmit = async (data: IPost) => {
+        console.log('Updating post with data:', data);
+        setModalOpen(false); // Close the modal after submission
+    };
+
     useEffect(() => {
         const fetchComments = async () => {
             try {
-                const response = await getComments(post._id);
-                setComments(response);
+                // const response = await getComments(post._id);
+
+                // setComments(response);
             } catch (error) {
                 console.error("Error fetching comments:", error);
             }
@@ -66,7 +88,8 @@ export const PostDetailsCard: React.FC<PostCardProps> = ({ post }) => {
         if (!newComment.trim()) return;
 
         try {
-            const response = await addComment(post._id, newComment);
+            // const response = await addComment(post._id, newComment);
+
             // setComments([...comments, response]);
             setNewComment("");
         } catch (error) {
@@ -74,9 +97,9 @@ export const PostDetailsCard: React.FC<PostCardProps> = ({ post }) => {
         }
     };
 
-    const handleEditComment = (comment) => {
-        setEditingComment(comment);
-        setEditedComment(comment.content);
+    const handleEditComment = (comment: string) => {
+        // setEditingComment(comment);
+        // setEditedComment(comment.content);
     };
 
     const handleUpdateComment = async () => {
@@ -96,14 +119,27 @@ export const PostDetailsCard: React.FC<PostCardProps> = ({ post }) => {
         }
     };
 
-    const handleDeleteComment = async (commentId) => {
+    const handleDeleteComment = async (commentId: string) => {
         try {
-            await deleteComment(post._id, commentId);
-            setComments(comments.filter((comment) => comment._id !== commentId));
+            // await deleteComment(post._id, commentId);
+            // setComments(comments.filter((comment) => comment?._id !== commentId));
         } catch (error) {
             console.error("Error deleting comment:", error);
         }
     };
+
+    const handleSavePost = async () => {
+        try {
+            const response = await savedPost(post._id);
+
+            toast.success("Post saved successfully")
+            console.log("Post saved successfully:", response);
+        } catch (error) {
+            toast.error("Already saved");
+            console.error("Failed to save post:", error);
+        }
+    };
+
 
     return (
         <div className="group max-w-5xl mx-auto mt-10 border border-gray-300 dark:border-gray-700 rounded-2xl">
@@ -132,10 +168,28 @@ export const PostDetailsCard: React.FC<PostCardProps> = ({ post }) => {
                             }).format(new Date(post?.createdAt))}
                         </span>
                     </div>
-                    {post.isPremium && (
-                        <span className="bg-yellow-500 text-white font-medium text-xs px-2.5 py-0.5 rounded-full">
-                            Premium
-                        </span>
+
+                    {post.authorId?._id !== user?.userId && (
+                        <button
+                            aria-label="Save post"
+                            className=""
+                            onClick={handleSavePost}
+                        >
+                            <Bookmark />
+                        </button>
+                    )}
+
+                    {post.authorId?._id === user?.userId && (
+                        <>
+                            <div>
+                                <PostCreateModal
+                                    isOpen={isModalOpen}
+                                    post={post}
+                                    onOpenChange={() => setModalOpen(!isModalOpen)}
+                                    onSubmit={handleEditSubmit}
+                                />
+                            </div>
+                        </>
                     )}
                 </div>
                 <h4 className="text-xl text-gray-900 dark:text-white font-medium leading-8 mb-3 sm:mb-5 text-left">
@@ -145,25 +199,28 @@ export const PostDetailsCard: React.FC<PostCardProps> = ({ post }) => {
                     <p>{post.content || "Content not available."}</p>
                 </div>
                 <div className="flex items-center space-x-2">
-                    <p className="text-left bg-zinc-300 dark:bg-slate-600 px-2 inline-block rounded-full">
+                    {post.isPremium && (
+                        <span className="bg-yellow-500 text-white font-medium text-sm px-2.5 py-0.5 rounded-full">
+                            Premium
+                        </span>
+                    )}
+                    <p className="text-left bg-zinc-300 dark:bg-slate-600 ont-medium text-sm px-2.5 py-0.5 rounded-full">
                         {post.category}
                     </p>
                     <button
-                        className={`flex items-center text-gray-700 cursor-pointer ${
-                            hasVoted ? "opacity-50 cursor-not-allowed" : ""
-                        }`}
-                        onClick={handleUpVote}
+                        className={`flex items-center text-gray-700 cursor-pointer ${hasVoted ? "opacity-50 cursor-not-allowed" : ""
+                            }`}
                         disabled={hasVoted}
+                        onClick={handleUpVote}
                     >
                         <ChevronUp className="text-blue-500" />
                         <span className="ml-1 dark:text-white font-normal">{upVoteCount}</span>
                     </button>
                     <button
-                        className={`flex items-center text-gray-700 cursor-pointer ${
-                            hasVoted ? "opacity-50 cursor-not-allowed" : ""
-                        }`}
-                        onClick={handleDownVote}
+                        className={`flex items-center text-gray-700 cursor-pointer ${hasVoted ? "opacity-50 cursor-not-allowed" : ""
+                            }`}
                         disabled={hasVoted}
+                        onClick={handleDownVote}
                     >
                         <ChevronDown className="text-red-500" />
                         <span className="ml-1 dark:text-white font-normal">{downVoteCount}</span>
@@ -200,19 +257,19 @@ export const PostDetailsCard: React.FC<PostCardProps> = ({ post }) => {
                     {editingComment ? (
                         <div className="mt-4">
                             <textarea
+                                className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg mb-2"
                                 value={editedComment}
                                 onChange={(e) => setEditedComment(e.target.value)}
-                                className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg mb-2"
                             />
                             <button
-                                onClick={handleUpdateComment}
                                 className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded-lg"
+                                onClick={handleUpdateComment}
                             >
                                 Update Comment
                             </button>
                             <button
-                                onClick={() => setEditingComment(null)}
                                 className="ml-2 bg-gray-500 hover:bg-gray-600 text-white py-1 px-3 rounded-lg"
+                                onClick={() => setEditingComment(null)}
                             >
                                 Cancel
                             </button>
@@ -220,14 +277,14 @@ export const PostDetailsCard: React.FC<PostCardProps> = ({ post }) => {
                     ) : (
                         <div className="mt-4">
                             <textarea
+                                className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg mb-2"
+                                placeholder="Add a comment..."
                                 value={newComment}
                                 onChange={(e) => setNewComment(e.target.value)}
-                                placeholder="Add a comment..."
-                                className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg mb-2"
                             />
                             <button
-                                onClick={handleAddComment}
                                 className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded-lg"
+                                onClick={handleAddComment}
                             >
                                 Add Comment
                             </button>
