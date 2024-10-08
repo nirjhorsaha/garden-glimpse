@@ -12,7 +12,7 @@ interface PostCardProps {
 }
 
 export const PostCard: React.FC<PostCardProps> = ({ post }) => {
-    console.log(post)
+    // console.log(post)
     const [isExpanded, setIsExpanded] = useState(false);
     const router = useRouter(); // Initialize router
 
