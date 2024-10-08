@@ -19,4 +19,5 @@ declare module "lucide-react" {
   export const ChevronUp: (props: LucideProps) => JSX.Element;
   export const ChevronDown: (props: LucideProps) => JSX.Element;
   export const Edit: (props: LucideProps) => JSX.Element;
+  export const ShieldCheck: (props: LucideProps) => JSX.Element;
 }

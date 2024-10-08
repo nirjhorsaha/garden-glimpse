@@ -11,6 +11,7 @@ interface PostCardProps {
 }
 
 export const AuthorDetails: React.FC<PostCardProps> = ({ author }) => {
+    console.log(author)
     const [isFollowing, setIsFollowing] = useState(false); // State to track follow status
 
     const handleFollowToggle = () => {

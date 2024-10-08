@@ -12,6 +12,7 @@ interface PostCardProps {
 }
 
 export const PostCard: React.FC<PostCardProps> = ({ post }) => {
+    console.log(post)
     const [isExpanded, setIsExpanded] = useState(false);
     const router = useRouter(); // Initialize router
 
@@ -20,11 +21,11 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
         setIsExpanded(!isExpanded);
     };
 
-     const handleCardClick = () => {
-        router.push(`/post/${post._id}`); 
+    const handleCardClick = () => {
+        router.push(`/post/${post._id}`);
     };
 
-    
+
     // Limit content to approximately two lines 
     const MAX_CHARACTERS = 100;
     const truncatedContent = post.content.length > MAX_CHARACTERS
@@ -33,10 +34,10 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
 
     return (
         <button
-             className="group w-full border border-gray-300 dark:border-gray-700 rounded-2xl p-4 lg:p-6 flex flex-col md:flex-row items-start md:gap-6 cursor-pointer"
+            className="group w-full border border-gray-300 dark:border-gray-700 rounded-2xl p-4 lg:p-6 flex flex-col md:flex-row items-start md:gap-6 cursor-pointer"
             type="button"
-            onClick={handleCardClick} 
-            
+            onClick={handleCardClick}
+
         >
             {/* Left Side Content */}
             <div className="flex-1">
@@ -47,6 +48,9 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
                             >
                                 {post?.authorId?.name || "Unknown Author"}
                             </span>
+                            {/* {post.upVoteCount >= 1 && (
+                                <ShieldCheck className="text-blue-600 mr-4 size-5" />
+                            )} */}
                             <span className="text-indigo-600 font-medium">
                                 {new Intl.DateTimeFormat('en-US', {
                                     month: 'short',

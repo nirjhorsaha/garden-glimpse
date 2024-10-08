@@ -1,8 +1,10 @@
 /* eslint-disable prettier/prettier */
-
-export default function MyProfile() {
-
+const ProfilePage =() => {
   return (
-    <div> my profile</div>
+    <div>
+      <h1> This is, ProfilePage component! </h1>
+    </div>
   );
 };
+
+export default ProfilePage;
