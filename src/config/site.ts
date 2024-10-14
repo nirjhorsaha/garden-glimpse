@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
@@ -5,9 +6,21 @@ export const siteConfig = {
   description:
     "Discover and share gardening tips, plant care advice, and seasonal guides with a vibrant community of gardening enthusiasts.",
   navItems: [
+    // {
+    //   label: "Home",
+    //   href: "/",
+    // },
     {
-      label: "Home",
-      href: "/",
+      label: "About",
+      href: "/about-us",
+    },
+    {
+      label: "Gallery",
+      href: "/gallery",
+    },
+    {
+      label: "Contact",
+      href: "/contact-us",
     },
   ],
   navMenuItems: [

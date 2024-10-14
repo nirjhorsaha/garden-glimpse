@@ -1,14 +1,15 @@
 /* eslint-disable prettier/prettier */
 'use client'
 import { useState } from "react";
-import { Button, Image } from "@nextui-org/react";
-import { ChevronUp, ChevronDown, Edit } from "lucide-react";
+import { Image } from "@nextui-org/react";
+import { ChevronUp, ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { useUser } from "@/src/context/user.provider";
 
 import { IPost } from "../../types";
-import PostCreateModal from "./PostCreateModal";
+import toast from "react-hot-toast";
+
 
 interface PostCardProps {
     post: IPost;
@@ -28,12 +29,13 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
     };
 
 
-    console.log(post.authorId)
+    // console.log(post.authorId)
     const [isExpanded, setIsExpanded] = useState(false);
     const router = useRouter(); // Initialize router
-    const { user, setIsLoading: userLoading } = useUser()
+    const { user } = useUser()
 
-    console.log(user?.userId)
+    // console.log('Premium check: ', post.isPremium);
+    // console.log('Profile veify check: ', user?.profileVerified);
 
 
     const toggleContent = () => {
@@ -41,21 +43,30 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
     };
 
     const handleCardClick = () => {
+      // Check if the post is premium and user is not verified
+      if (post.isPremium && !user?.profileVerified) {
+        // Show toast message
+        toast.error(
+          'You need to verify your profile to access premium content.',
+        );
+      } else {
+        // Navigate to post details
         router.push(`/post/${post._id}`);
+      }
     };
 
 
     // Limit content to approximately two lines 
     const MAX_CHARACTERS = 100;
-    const truncatedContent = post.content.length > MAX_CHARACTERS
+    const truncatedContent = post?.content?.length > MAX_CHARACTERS
         ? post.content.slice(0, MAX_CHARACTERS) + "... "
         : post.content;
 
     return (
-        <button
-            className="group w-full border border-gray-300 dark:border-gray-700 rounded-2xl p-4 lg:p-6 flex flex-col md:flex-row items-start md:gap-6 cursor-pointer"
-            type="button"
-            onClick={handleCardClick}
+        <p
+            className="group w-full border border-gray-300 dark:border-gray-700 rounded-2xl p-4 lg:p-6 flex flex-col md:flex-row items-start md:gap-6"
+            // type="button"
+            // onClick={handleCardClick}
         >
 
             {/* Left Side Content */}
@@ -67,16 +78,16 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
                             >
                                 {post?.authorId?.name || "Unknown Author"}
                             </span>
-                            {/* {post.upVoteCount >= 1 && (
+                             {/* {post.upVoteCount >= 1 && (
                                 <ShieldCheck className="text-blue-600 mr-4 size-5" />
-                            )} */}
-                            <span className="text-indigo-600 font-medium">
+                            )}  */}
+                             <span className="text-indigo-600 font-medium">
                                 {new Intl.DateTimeFormat('en-US', {
                                     month: 'short',
                                     day: '2-digit',
                                     year: 'numeric',
                                 }).format(new Date(post?.createdAt))}
-                            </span>
+                            </span> 
                         </div>
                      
                         {post.isPremium && (
@@ -109,7 +120,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
                         ) : (
                             <>
                                 {truncatedContent}
-                                {post.content.length > MAX_CHARACTERS && (
+                                {post.content?.length > MAX_CHARACTERS && (
                                     <button
                                         className="text-blue-500 hover:underline"
                                         // onClick={toggleContent}
@@ -154,6 +165,6 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
                     src={post.images?.[0] || "/fallback-image.jpg"}
                 />
             </div>
-        </button>
+        </p>
     );
 };

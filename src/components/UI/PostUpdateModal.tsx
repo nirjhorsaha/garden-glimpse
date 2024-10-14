@@ -36,12 +36,10 @@ interface PostCreateModalProps {
   onSubmit?: (data: IPost) => Promise<void>;
 }
 
-export default function PostCreateModal({
-  post,
-}: PostCreateModalProps) {
+export default function PostUpdateModal({ post }: PostCreateModalProps) {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const { register, handleSubmit, reset } = useForm();
-//   const updatePostMutation = useUpdatePost();
+  //   const updatePostMutation = useUpdatePost();
 
   const handleOpen = () => {
     if (post) {
@@ -57,7 +55,27 @@ export default function PostCreateModal({
   };
 
   const handleFormSubmit: SubmitHandler<FieldValues> = async (data) => {
-    console.log(data)
+    const file = (data.image as FileList)?.[0];
+
+    const postData: Partial<IPost> = {
+      title: data.title,
+      content: data.content,
+      category: data.category,
+      images: file ? [URL.createObjectURL(file)] : post?.images, // handling image upload
+      isPremium: data.premium || false,
+    };
+
+    try {
+      await updatePost(post?._id!, postData as IPost);
+      // updatePostMutation.mutate({
+      //   postId: post?._id!,
+      //   postData: postData as IPost,
+      // });
+      toast.success('Post updated successfully');
+    } catch (error) {
+      console.error('Error updating post:', error);
+      toast.error('Failed to update post');
+    }
 
     onClose();
   };

@@ -3,7 +3,7 @@
 import { getCookies } from "cookies-next";
 
 import envConfig from "@/src/config/envConfig";
-import { IPost, IUser } from "@/src/types";
+import { IPost } from "@/src/types";
 import axiosInstance from "@/src/lib/AxiosInstance";
 
 export const getAllPosts = async () => {
@@ -14,6 +14,17 @@ export const getAllPosts = async () => {
     };
 
     const res = await fetch(`${envConfig.baseApi}/post`, fetchOption);
+
+    return res.json();
+};
+export const getAllUsers = async () => {
+    const fetchOption = {
+        next: {
+            tags: ["users"],
+        },
+    };
+
+    const res = await fetch(`${envConfig.baseApi}/users`, fetchOption);
 
     return res.json();
 };
@@ -42,12 +53,12 @@ export const updatePost = async (postId: string, postData: IPost) => {
     const cookies = getCookies(); // Retrieve cookies using getCookies
 
     const fetchOptions = {
-        method: "PATCH",
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${cookies.accessToken}`, // Use the access token from cookies
-        },
-        body: JSON.stringify(postData),
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${cookies.accessToken}`, // Use the access token from cookies
+      },
+      body: JSON.stringify(postData),
     };
 
     const res = await fetch(`${envConfig.baseApi}/post/${postId}`, fetchOptions);
@@ -60,7 +71,8 @@ export const updatePost = async (postId: string, postData: IPost) => {
 };
 
 
-export const updateUserProfile = async (data: IUser) => {
+export const updateUserProfile = async (data:any) => {
+    console.log(data)
     const cookies = getCookies(); // Retrieve cookies using getCookies
 
     const fetchOptions = {

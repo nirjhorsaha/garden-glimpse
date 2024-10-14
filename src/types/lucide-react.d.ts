@@ -22,4 +22,8 @@ declare module 'lucide-react' {
   export const ShieldCheck: (props: LucideProps) => JSX.Element;
   export const Bookmark: (props: LucideProps) => JSX.Element;
   export const Trash2: (props: LucideProps) => JSX.Element;
+  export const LayoutDashboard: (props: LucideProps) => JSX.Element;
+  export const LayoutDashboard: (props: LucideProps) => JSX.Element;
+  export const HelpCircle: (props: LucideProps) => JSX.Element;
+  export const Leaf: (props: LucideProps) => JSX.Element;
 }

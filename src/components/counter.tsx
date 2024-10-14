@@ -1,7 +1,8 @@
-"use client";
+/* eslint-disable prettier/prettier */
+'use client';
 
-import { useState } from "react";
-import { Button } from "@nextui-org/button";
+import { useState } from 'react';
+import { Button } from '@nextui-org/button';
 
 export const Counter = () => {
   const [count, setCount] = useState(0);

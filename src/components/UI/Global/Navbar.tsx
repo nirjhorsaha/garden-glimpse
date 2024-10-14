@@ -18,7 +18,6 @@ import clsx from "clsx";
 import { button as buttonStyles } from "@nextui-org/theme";
 import { Spinner } from "@nextui-org/react";
 
-import NavbarDropdown from "./NavbarDropDown";
 
 import { siteConfig } from "@/src/config/site";
 import { ThemeSwitch } from "@/src/components/UI/theme-switch";
@@ -30,6 +29,8 @@ import {
     SearchIcon,
 } from "@/src/components/icons";
 import { useUser } from "@/src/context/user.provider";
+
+import NavbarDropdown from "../NavbarDropDown";
 
 
 export const Navbar = () => {

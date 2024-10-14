@@ -1,6 +1,5 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable no-console */
-/* eslint-disable prettier/prettier */
 
 "use client";
 
@@ -77,7 +76,6 @@ export default function RegisterPage() {
       ...data,
       role: "user",
       profileImage: imageURL,
-
     };
 
     try {

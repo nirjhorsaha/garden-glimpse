@@ -10,10 +10,9 @@ import {
     useEffect,
     useState,
 } from "react";
-import { FieldValues } from "react-hook-form";
 
 import { IUser } from "../types";
-import { getCurrentUser, loginUser } from "../services/AuthServices";
+import { getCurrentUser } from "../services/AuthServices";
 
 const UserContext = createContext<IUserProviderValues | undefined>(undefined);
 
@@ -30,6 +29,7 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
 
     const handleUser = async () => {
         const user = await getCurrentUser();
+        console.log(user)
 
         setUser(user);
         setIsLoading(false);

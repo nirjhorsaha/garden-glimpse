@@ -1,11 +1,10 @@
 /* eslint-disable prettier/prettier */
-const ForgotPasswordPage = () => {
-    console.log()
-    return (
-        <div>
-            <h1> This is, ForgotPasswordPage component! </h1>
-        </div>
-    );
+const Pakhi = () => {
+  return (
+    <div>
+      <h1>forgot password page</h1>{' '}
+    </div>
+  );
 };
 
-export default ForgotPasswordPage;
+export default Pakhi;

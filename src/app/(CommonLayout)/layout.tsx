@@ -1,8 +1,8 @@
 /* eslint-disable prettier/prettier */
 import "@/src/styles/globals.css";
 
-import Footer from "@/src/components/UI/Footer";
-import { Navbar } from "@/src/components/UI/Navbar";
+import Footer from "@/src/components/UI/Global/Footer";
+import { Navbar } from "@/src/components/UI/Global/Navbar";
 
 export default function RootLayout({
   children,

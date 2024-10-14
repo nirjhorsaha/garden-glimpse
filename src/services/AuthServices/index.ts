@@ -39,16 +39,41 @@ export const loginUser = async (userData: FieldValues) => {
 };
 
 
-export const forgotPassword = async (userData: FieldValues) => {
+export const forgetPassword = async (userData: FieldValues) => {
     try {
         const { data } = await axiosInstance.post("/auth/forget-password", userData);
-        console.log(data);
 
         return data;
     } catch (error: any) {
         throw new Error(error);
     }
 };
+
+
+export const resetPassword = async (userData: FieldValues) => {
+  try {
+    //   console.log(userData)
+      const accessToken = userData.accessToken; 
+
+    // Add the accessToken to the Authorization header
+    const { data } = await axiosInstance.post(
+      '/auth/reset-password',
+      userData,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    );
+
+    // console.log(data);
+
+    return data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || 'Something went wrong');
+  }
+};
+
 
 export const logout = () => {
     cookies().delete("accessToken");
@@ -64,6 +89,7 @@ export const getCurrentUser = async () => {
         decodedToken = await jwtDecode(accessToken);
 
         return {
+            _id: decodedToken._id,
             userId: decodedToken.userId,
             name: decodedToken.name,
             email: decodedToken.email,
@@ -74,6 +100,10 @@ export const getCurrentUser = async () => {
             favouritePosts: decodedToken.favouritePosts,
             iat: decodedToken.number,
             exp: decodedToken.number,
+            followers: decodedToken.followers,
+            followings: decodedToken.followings,
+            profileVerified: decodedToken.profileVerified,
+
         };
     }
 

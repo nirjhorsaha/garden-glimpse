@@ -1,9 +1,7 @@
 /* eslint-disable prettier/prettier */
-"use client"
-import PostCardLoadingUI from "@/src/components/UI/PostCardLoadingUI";
+'use client';
+import PostCardLoadingUI from '@/src/components/UI/Loading/PostCardLoadingUI';
 
 export default function PostSkeleton() {
-  return (
-    <PostCardLoadingUI/>
-  );
+  return <PostCardLoadingUI />;
 }

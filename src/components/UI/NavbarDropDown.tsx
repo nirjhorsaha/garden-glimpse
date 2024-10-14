@@ -12,7 +12,7 @@ import {
 
 import { usePathname, useRouter } from "next/navigation";
 import { Avatar } from "@nextui-org/avatar";
-import { User, Settings, LogOut } from "lucide-react";
+import { User, Settings, LogOut, LayoutDashboard } from 'lucide-react';
 import { logout } from "@/src/services/AuthServices";
 import { useUser } from "@/src/context/user.provider";
 import { protectedRoutes } from "@/src/constant";
@@ -52,12 +52,24 @@ export default function NavbarDropdown() {
         />
       </DropdownTrigger>
       <DropdownMenu aria-label="Static Actions">
-        <DropdownItem startContent={<User size={16} />} onClick={() => handleNavigation("/profile")}>
-          Profile
-        </DropdownItem>
-        <DropdownItem startContent={<Settings size={16} />} onClick={() => handleNavigation("/settings")}>
+        {user?.role === "admin" ? (
+          <DropdownItem
+            startContent={<LayoutDashboard size={16} />}
+            onClick={() => handleNavigation("/admin-dashboard")}
+          >
+            Dashboard
+          </DropdownItem>
+        ) : (
+          <DropdownItem
+            startContent={<User size={16} />}
+            onClick={() => handleNavigation("/profile")}
+          >
+            Profile
+          </DropdownItem>
+        )}
+        {/* <DropdownItem startContent={<Settings size={16} />} onClick={() => handleNavigation("/settings")}>
           Settings
-        </DropdownItem>
+        </DropdownItem> */}
 
         {/* <DropdownItem startContent={<Plus size={16} />} onClick={() => handleNavigation("/create-post")}>
           Create Post

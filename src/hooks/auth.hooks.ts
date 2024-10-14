@@ -1,11 +1,11 @@
 /* eslint-disable prettier/prettier */
+/* eslint-disable no-console */
 
 import { useMutation } from "@tanstack/react-query";
 import { FieldValues } from "react-hook-form";
 import toast from "react-hot-toast";
 
 import { loginUser, registerUser } from "../services/AuthServices";
-
 
 export const useUserRegistration = () => {
   return useMutation<any, Error, FieldValues>({
@@ -26,7 +26,7 @@ export const useUserLogin = () => {
     mutationKey: ["USER_LOGIN"],
     mutationFn: async (userData) => await loginUser(userData),
     onSuccess: () => {
-      toast.success("User login successful.");
+      toast.success("Login successful.");
     },
     onError: (error) => {
       console.error(error.message)
@@ -34,3 +34,4 @@ export const useUserLogin = () => {
     },
   });
 };
+
