@@ -11,6 +11,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import UserProvider from "@/src/context/user.provider";
 
+// Interface for provider props, including children and optional theme properties.
 export interface ProvidersProps {
   children: React.ReactNode;
   themeProps?: ThemeProviderProps;
