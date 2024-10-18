@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { z } from "zod";
 
+// Zod schema for validating registration data
 const registerValidationSchema = z.object({
     name: z.string().min(1, "Please enter your name!"),
     email: z.string().email("Please enter a valid email address!"),
