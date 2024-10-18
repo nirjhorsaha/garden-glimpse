@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 
 import { loginUser, registerUser } from "../services/AuthServices";
 
+// Custom hook for handling user registration.
 export const useUserRegistration = () => {
   return useMutation<any, Error, FieldValues>({
     mutationKey: ["USER_REGISTRATION"],
@@ -21,6 +22,7 @@ export const useUserRegistration = () => {
   });
 };
 
+// Custom hook for handling user login.
 export const useUserLogin = () => {
   return useMutation<any, Error, FieldValues>({
     mutationKey: ["USER_LOGIN"],
