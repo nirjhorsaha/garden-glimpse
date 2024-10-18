@@ -8,12 +8,13 @@ const AuthRoutes = ["/login", "/signup"];
 
 type Role = keyof typeof roleBasedRoutes;
 
+// Routes accessible by regular users & admin users
 const roleBasedRoutes = {
     user: [/^\/profile/, /^\/post/,],
     admin: [/^\/admin/],
 };
 
-// This function can be marked `async` if using `await` inside
+
 export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
@@ -32,6 +33,7 @@ export async function middleware(request: NextRequest) {
         }
     }
 
+    // If the user is authenticated, check their role for access to specific routes.
     if (user?.role && roleBasedRoutes[user?.role as Role]) {
         const routes = roleBasedRoutes[user?.role as Role];
 
@@ -40,9 +42,11 @@ export async function middleware(request: NextRequest) {
         }
     }
 
+    // Redirect to home if access is denied.
     return NextResponse.redirect(new URL("/", request.url));
 }
 
+// Routes to apply the middleware
 export const config = {
     matcher: ["/profile", "/post/:page*", "/admin", "/login", "/register"],
 };
