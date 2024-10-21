@@ -7,55 +7,83 @@ import { useForm, Controller } from 'react-hook-form';
 import { Input, Button } from '@nextui-org/react';
 import { MailIcon, EyeIcon, EyeOffIcon } from 'lucide-react';
 import { FieldValues, SubmitHandler } from 'react-hook-form';
-import toast from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 
-import { resetPassword } from '@/src/services/AuthServices';
+import { useResetPassword } from '@/src/hooks/auth.hooks';
 
 const ResetPasswordPage = () => {
-  const [email, setEmail] = useState('');
+  const router = useRouter(); // Initialize useRouter
+  const { mutate: handleResetPassword, isPending, isSuccess, isError } = useResetPassword();
+
+  // const [email, setEmail] = useState('');
   const [token, setToken] = useState('');
 
-  useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search);
+  // useEffect(() => {
+  //   const searchParams = new URLSearchParams(window.location.search);
 
-    setEmail(searchParams.get('email') || '');
-    setToken(searchParams.get('token') || '');
-  }, []);
+  //   setEmail(searchParams.get('email') || '');
+  //   setToken(searchParams.get('token') || '');
+  // }, []);
 
   const {
     control,
     handleSubmit,
     formState: { errors },
+    reset: resetModalForm, // Get the reset function from useForm
   } = useForm<FieldValues>({
-    defaultValues: { email }, // Pre-fill email
+    defaultValues: { email: '' }, // Pre-fill email
   });
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const emailParam = searchParams.get('email');
+    const tokenParam = searchParams.get('token');
+
+    setToken(tokenParam || '');
+
+    // Reset the form to include the email
+    if (emailParam) {
+      resetModalForm({ email: emailParam, password: '' });
+    }
+  }, [resetModalForm]);
+
 
   const [isVisible, setIsVisible] = useState(false);
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false); // Loading state
+  // const [loading, setLoading] = useState(false); // Loading state
 
   const toggleVisibility = () => setIsVisible(!isVisible);
 
+
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-    setLoading(true); // Set loading to true
+    // setLoading(true); // Set loading to true
     setError(''); // Reset any previous error
 
+
     try {
-      const response = await resetPassword({
+      const response = await handleResetPassword({
         userEmail: data.email,
         newPassword: data.password,
         accessToken: token,
       });
 
-      toast.success('Password successfully updated!');
+      // Clear form fields
+      resetModalForm({ email: '', password: '' });
+
       console.log('Reset Data:', response);
+
     } catch (err) {
       setError('Failed to reset password. Please try again.'); // Set error message on failure
       console.error('Error resetting password:', err);
     } finally {
-      setLoading(false); // Reset loading state
+      // setLoading(false); // Reset loading state
     }
   };
+
+  // Redirect to login page after success
+  if (!isPending && isSuccess) {
+    router.push('/login');
+  }
 
   return (
     <div className="flex w-full flex-col items-center justify-center h-[calc(100vh-200px)] px-4 sm:px-6 lg:px-8 pt-12">
@@ -81,6 +109,7 @@ const ResetPasswordPage = () => {
                     }
                     label="Email"
                     type="email"
+                    value={field.value || ''}
                     variant="bordered"
                   />
                   {errors.email && (
@@ -133,10 +162,10 @@ const ResetPasswordPage = () => {
           <Button
             className="my-3 w-full rounded-md bg-default-900 font-semibold text-default"
             color="primary"
-            disabled={loading} // Disable button while loading
+            disabled={isPending || isError} // Disable button while loading
             type="submit"
           >
-            {loading ? 'Resetting...' : 'Reset Password'}
+            {isPending ? 'Resetting...' : 'Reset Password'}
           </Button>
         </form>
       </div>
