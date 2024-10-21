@@ -12,10 +12,13 @@ import { Input } from "@nextui-org/input";
 import { EyeIcon, EyeOffIcon, MailIcon, User, Phone, MapPin, Loader } from "lucide-react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { motion } from 'framer-motion';
+
 
 import registerValidationSchema from "@/src/schemas/register.schema";
 import envConfig from "@/src/config/envConfig";
 import { useUserRegistration } from "@/src/hooks/auth.hooks";
+import { variants } from "@/src/constant";
 
 export default function RegisterPage() {
   const { mutate: handleUserRegistration, isPending } = useUserRegistration();
@@ -71,6 +74,7 @@ export default function RegisterPage() {
   };
 
 
+  // Handles form submission by adding a default 'role' to the form data.
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     const userData = {
       ...data,
@@ -106,14 +110,28 @@ export default function RegisterPage() {
   return (
     <div className="flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 pt-12">
       {/* <div className="flex h-[calc(100vh-200px)] flex-col items-center justify-center"> */}
-      <h3 className="my-2 text-3xl font-bold">Register </h3>
-      <p className="mb-4 max-w-lg text-center">Discover and share gardening tips with a vibrant community of gardening enthusiasts.</p>
+      <motion.h3 animate="visible"
+        className="my-2 text-3xl font-bold"
+        initial="hidden"
+        transition={{ duration: 0.5 }}
+        variants={variants}
+      >Register </motion.h3>
+      <motion.p animate="visible"
+       className="mb-4 max-w-lg text-center"
+       initial="hidden"
+       transition={{ duration: 0.5,delay: 0.2 }}
+        variants={variants}
+      >Discover and share gardening tips with a vibrant community of gardening enthusiasts.</motion.p>
       <div className="w-full max-w-md">
 
         <form
           onSubmit={handleSubmit(onSubmit)}>
 
-          <div className="py-3">
+          <motion.div animate="visible"
+          className="py-3"
+          initial="hidden"
+          transition={{ duration: 0.5,delay: 0.4 }}
+           variants={variants}>
             <Controller
               control={control}
               name="name"
@@ -138,9 +156,13 @@ export default function RegisterPage() {
                 </>
               )}
             />
-          </div>
+          </motion.div>
 
-          <div className="py-3">
+          <motion.div animate="visible"
+          className="py-3"
+          initial="hidden"
+          transition={{ duration: 0.5,delay: 0.6 }}
+           variants={variants}>
             <Controller
               control={control}
               name="email"
@@ -165,9 +187,13 @@ export default function RegisterPage() {
                 </>
               )}
             />
-          </div>
+          </motion.div>
 
-          <div className="py-3">
+          <motion.div animate="visible"
+          className="py-3"
+          initial="hidden"
+          transition={{ duration: 0.5,delay: 0.8 }}
+           variants={variants}>
             <Controller
               control={control}
               name="password"
@@ -203,9 +229,14 @@ export default function RegisterPage() {
                 </>
               )}
             />
-          </div>
+          </motion.div>
 
-          <div className="py-3">
+          <motion.div animate="visible"
+          className="py-3"
+          initial="hidden"
+          transition={{ duration: 0.5,delay: 1.0 }}
+            variants={variants}
+          >
             <Controller
               control={control}
               name="phone"
@@ -230,9 +261,13 @@ export default function RegisterPage() {
                 </>
               )}
             />
-          </div>
+          </motion.div>
 
-          <div className="py-3">
+          <motion.div animate="visible"
+          className="py-3"
+          initial="hidden"
+          transition={{ duration: 0.5,delay: 1.2 }}
+            variants={variants}>
             <Controller
               control={control}
               name="address"
@@ -257,9 +292,13 @@ export default function RegisterPage() {
                 </>
               )}
             />
-          </div>
+          </motion.div>
 
-          <div className="py-3">
+          <motion.div animate="visible"
+          className="py-3"
+          initial="hidden"
+          transition={{ duration: 0.5,delay: 1.4 }}
+            variants={variants}>
             <label className="block mb-1 font-semibold" htmlFor="profileImage">
               Profile Picture
             </label>
@@ -285,24 +324,35 @@ export default function RegisterPage() {
                 </>
               )}
             />
-          </div>
+          </motion.div>
 
-          <Button
-            className="my-3 w-full rounded-md bg-default-900 font-semibold text-default"
-            isDisabled={isSubmitting || isPending}
-            size="lg"
-            type="submit"
-          >
-            {isSubmitting ? (
-              <Loader className="animate-spin mr-2 inline-block" />
-            ) : null}
-            {isSubmitting ? "Registering..." : "Register"}
-          </Button>
-
+          <motion.div
+          animate="visible"
+          initial="hidden"
+          transition={{ duration: 0.5,delay: 1.6 }}
+            variants={variants}>
+            <Button
+              className="my-3 w-full rounded-md bg-default-900 font-semibold text-default"
+              isDisabled={isSubmitting || isPending}
+              size="lg"
+              type="submit"
+            >
+              {isSubmitting ? (
+                <Loader className="animate-spin mr-2 inline-block" />
+              ) : null}
+              {isSubmitting ? "Registering..." : "Register"}
+            </Button>
+          </motion.div>
         </form>
-        <div className="text-center">
+
+        <motion.div animate="visible"
+        className="text-center"
+        initial="hidden"
+        transition={{ duration: 0.5,delay: 1.8 }}
+          variants={variants}>
           Already have an account? {" "} <span className="font-bold bg-gradient-to-r from-sky-500 from-30% to-green-500 to-70% inline-block text-transparent bg-clip-text"><Link href={"/login"}>Login</Link></span>
-        </div>
+        </motion.div>
+
       </div>
     </div>
   );
