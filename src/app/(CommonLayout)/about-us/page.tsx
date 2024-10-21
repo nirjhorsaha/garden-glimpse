@@ -1,113 +1,89 @@
 /* eslint-disable prettier/prettier */
 'use client';
 import React from 'react';
+import { motion } from 'framer-motion';
 import {
   Card,
-  Button,
   CardHeader,
   CardBody,
   Divider,
   CardFooter,
   Link,
 } from '@nextui-org/react';
-import { Leaf, HelpCircle, User } from 'lucide-react'; // Importing Lucide icons
 
-import Container from '@/src/components/UI/Global/Container';
+import { cardsData } from '@/src/utils/cardItems';
 
 const AboutUs = () => {
   return (
-    <Container>
-      <h2 className="font-manrope font-bold text-4xl  text-center mb-6">
-        About Garden Glimpse{' '}
-      </h2>
-      <p className="text-lg font-normal text-gray-500 max-w-5xl mx-auto text-center">
-        Welcome to GardenGlimpse. Whether you are a hobbyist or a professional,
-        our goal is to inspire, educate, and connect gardeners around the world
-        through expert advice, community support, and premium content.
-      </p>
-      <div className="flex flex-wrap justify-center p-6 gap-4">
-        {/* Card 1: Gardening Knowledge */}
-        <Card className="max-w-[500px]">
-          <CardHeader className="flex gap-3">
-            <Leaf color="#22c55e" size={40} />
-            <div className="flex flex-col">
-              <h4>Gardening Knowledge</h4>
-              <p className="text-default-500">Expert Tips & Guides</p>
-            </div>
-          </CardHeader>
-          <Divider />
-          <CardBody>
-            <p>
-              Discover expert gardening tips, plant care advice, and seasonal
-              guides to help your plants thrive.
-            </p>
-          </CardBody>
-          <Divider />
-          <CardFooter>
-            <Link isExternal showAnchorIcon href="/">
-              Explore Knowledge
-            </Link>
-          </CardFooter>
-        </Card>
+      <div className='pt-8 px-6'>
+      <motion.h2
+        animate={{ opacity: 1, y: 0 }}
+        className="font-manrope font-bold text-4xl text-center mb-6"
+        initial={{ opacity: 0, y: 20 }}
+        transition={{ duration: 0.5, delay: 0.1 }} // slight delay for heading
+      >
+        Garden Glimpse
+      </motion.h2>
 
-        {/* Card 2: Community Support */}
-        <Card className="max-w-[500px]">
-          <CardHeader className="flex gap-3">
-            <HelpCircle color="#22c55e" size={40} />
-            <div className="flex flex-col">
-              <h4>Community Support</h4>
-              <p className="text-default-500">Join Our Community</p>
-            </div>
-          </CardHeader>
-          <Divider />
-          <CardBody>
-            <p>
-              Connect with fellow gardeners! Share advice, upvote content,
-              comment, and follow others to create a vibrant gardening
-              community.
-            </p>
-          </CardBody>
-          <Divider />
-          <CardFooter>
-            <Link isExternal showAnchorIcon href="/">
-              Join Community
-            </Link>
-          </CardFooter>
-        </Card>
+      {/* Animated Paragraph with Staggered Entrance */}
+      <motion.p
+        animate={{ opacity: 1, y: 0 }}
+        className="text-lg font-normal text-gray-500 mx-auto"
+        initial={{ opacity: 0, y: 20 }}
+        transition={{ duration: 0.5, delay: 0.3 }} // delay for paragraph
+      >
+        Welcome to Garden Glimpse! Here, we believe that gardening is not just a hobby—it&apos;s a journey of discovery and connection. Whether you&apos;re a budding enthusiast or a seasoned expert, our mission is to inspire and empower you with valuable resources, a supportive community, and exclusive content tailored to enhance your gardening experience. Join us as we cultivate knowledge, share experiences, and grow together in our love for plants and nature.
+      </motion.p>
 
-        {/* Card 3: Premium Access */}
-        <Card className="max-w-[500px]">
-          <CardHeader className="flex gap-3">
-            <User color="#22c55e" size={40} />
-            <div className="flex flex-col">
-              <h4>Premium Access</h4>
-              <p className="text-default-500">Unlock Exclusive Content</p>
-            </div>
-          </CardHeader>
-          <Divider />
-          <CardBody>
-            <p>
-              Unlock premium content for in-depth gardening guides, exclusive
-              tips, and special features that provide detailed insights into
-              gardening techniques.
-            </p>
-          </CardBody>
-          <Divider />
-          <CardFooter>
-            <Link isExternal showAnchorIcon href="/">
-              Access Premium Content
-            </Link>
-          </CardFooter>
-        </Card>
+      <div className="flex flex-wrap justify-center my-4 md:p-6 gap-4">
+        {cardsData.map(({ icon, title, subtitle, description, link }, index) => (
+          <motion.div
+            key={title}
+            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.5, delay: index * 0.1 }} // staggered entrance
+          >
+            <Card className="max-w-[500px]">
+              <CardHeader className="flex gap-3">
+                {icon}
+                <div className="flex flex-col">
+                  <h4>{title}</h4>
+                  <p className="text-default-500">{subtitle}</p>
+                </div>
+              </CardHeader>
+              <Divider />
+              <CardBody>
+                <p>{description}</p>
+              </CardBody>
+              <Divider />
+              <CardFooter>
+                <Link isExternal showAnchorIcon color='success' href={link.href}>
+                  {link.text}
+                </Link>
+              </CardFooter>
+            </Card>
+          </motion.div>
+        ))}
       </div>
-
-      <div className="mt-6 text-center">
-        <Button color="success" size="lg">
-          Join the Garden Glimpse Community
-        </Button>
-      </div>
-    </Container>
+      {/* <motion.div
+        animate={{ opacity: 1, scale: 1 }}
+        className="text-center"
+        initial={{ opacity: 0, scale: 0.8 }}
+        transition={{ duration: 0.5, delay: 0.5 }} // delay for button
+      >
+        <motion.div
+          initial={{ scale: 1 }}
+          transition={{ duration: 0.2 }}
+        >
+          <Button color="success" size="md">
+            Join the Garden Glimpse Community
+          </Button>
+        </motion.div>
+      </motion.div> */}
+    </div>
   );
 };
 
 export default AboutUs;
+
+
