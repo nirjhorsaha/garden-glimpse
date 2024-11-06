@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import React from 'react';
+
 import {
   Modal,
   ModalBody,
@@ -22,7 +22,7 @@ interface ForgotPasswordFormValues {
 interface ForgotPasswordModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSendEmail: (email: string) => void; // Prop expects email as string
+  onSendEmail: (email: string) => void; 
 }
 
 const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
@@ -30,7 +30,6 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
   onClose,
   onSendEmail,
 }) => {
-  // Use the explicitly defined form values here
   const {
     control,
     handleSubmit,
@@ -41,7 +40,7 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
 
   // When the form is submitted, send the reset email
   const handleSendEmail = (data: ForgotPasswordFormValues) => {
-    onSendEmail(data.resetEmail); // Call the parent function with the email
+    onSendEmail(data.resetEmail); 
     onClose(); // Close modal after sending email
   };
 
