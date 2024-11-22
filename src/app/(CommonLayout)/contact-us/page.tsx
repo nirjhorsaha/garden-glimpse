@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 "use client";
 
 import {
@@ -119,7 +118,7 @@ const ContactUs = () => {
                     rows={5}
                   />
                   <Button className="mt-4 w-full" color="success" type="submit">
-                    Submit
+                    Send
                   </Button>
                 </form>
               </CardBody>
