@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 "use client"
 
 import {
@@ -13,6 +12,7 @@ import {
 
 import { IUser } from "../types";
 import { getCurrentUser } from "../services/AuthServices";
+import { useUserStore } from "../lib/zustand/userStore";
 
 const UserContext = createContext<IUserProviderValues | undefined>(undefined);
 
@@ -29,8 +29,13 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
 
     const handleUser = async () => {
         const user = await getCurrentUser();
-        console.log(user)
+        // console.log(user)
 
+        if (user) {
+            useUserStore.getState().setUser(user.data);
+            console.log('User from store', user.data);
+        }
+        
         setUser(user);
         setIsLoading(false);
     };
