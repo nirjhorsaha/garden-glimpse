@@ -4,10 +4,11 @@ import { Chip, Image, Tooltip, Popover, PopoverTrigger, PopoverContent } from '@
 import { ChevronUp, ChevronDown, Reply, SendHorizonal, Share, } from 'lucide-react';
 import { MdOutlineFavorite, MdFavoriteBorder } from "react-icons/md";
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { useRemovedPostFromProfile, useSavedPostToProfile, useUpdatePost } from '@/src/hooks/post.hooks';
 import { useUserStore } from '@/src/lib/zustand/userStore';
+import { addCommentToPost } from '@/src/services/AuthServices';
 
 import { IComments, IPost } from '../../types';
 import DeletePostModal from '../Modal/DeletePostModal';
@@ -31,111 +32,90 @@ export const PostDetailsCard: React.FC<PostCardProps> = ({ post }) => {
   const [newComment, setNewComment] = useState('');
   const [isPostSaved, setIsPostSaved] = useState(false); // Track if the post is saved
   const [isPostRemoved, setIsPostRemoved] = useState(false);
-
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
   const favoritePostIds = user?.favouritePosts || [];
   const isFavorite = favoritePostIds.includes(post?._id); // Check if the current post is a favorite
 
   const { toggleFavoritePost } = useUserStore();
-  
 
-  const handleAuthorClick = () => {
-    if (post.authorId?._id === user?.userId) {
-      router.push('/profile');
-    } else {
-      router.push(`/author/${post.authorId?._id}`);
+  const handleAuthorClick = useCallback(() => {
+    if (user) {
+      const route = post.authorId?._id === user?.userId ? '/profile' : `/author/${post.authorId?._id}`;
+
+      router.push(route);
     }
-  };
+  }, [user, post.authorId?._id, router]);
 
 
-  const handleUpVote = async () => {
-    try {
-      let newUpVoteCount = upVoteCount;
-      let newDownVoteCount = downVoteCount;
+  const handleVote = useCallback(
+    async (type: 'up' | 'down') => {
+      try {
+        let newUpVoteCount = upVoteCount;
+        let newDownVoteCount = downVoteCount;
 
-      if (hasVoted === 'up') {
-        // If the user has already upvoted, undo the upvote
-        newUpVoteCount -= 1;
-        setHasVoted(null);
-      } else {
-        // If the user is downvoting or has not voted
-        newUpVoteCount += 1;
-        if (hasVoted === 'down') {
-          newDownVoteCount -= 1; // Remove the downvote
+        if (type === 'up') {
+          if (hasVoted === 'up') {
+            newUpVoteCount -= 1;
+            setHasVoted(null);
+          } else {
+            newUpVoteCount += 1;
+            if (hasVoted === 'down') {
+              newDownVoteCount -= 1;
+            }
+            setHasVoted('up');
+          }
+        } else {
+          if (hasVoted === 'down') {
+            newDownVoteCount -= 1;
+            setHasVoted(null);
+          } else {
+            newDownVoteCount += 1;
+            if (hasVoted === 'up') {
+              newUpVoteCount -= 1;
+            }
+            setHasVoted('down');
+          }
         }
-        setHasVoted('up');
+
+        await updatePost({
+          postId: post?._id!,
+          postData: {
+            ...post,
+            upVoteCount: newUpVoteCount,
+            downVoteCount: newDownVoteCount,
+          },
+          isVoting: true,
+        });
+        setUpVoteCount(newUpVoteCount);
+        setDownVoteCount(newDownVoteCount);
+      } catch (error) {
+        console.error('Error updating vote:', error);
       }
-
-      await updatePost({
-        postId: post?._id!, // Pass the post ID
-        postData: {
-          ...post,
-          upVoteCount: newUpVoteCount,
-          downVoteCount: newDownVoteCount,
-        },
-        isVoting: true,
-      });
-      setUpVoteCount(newUpVoteCount);
-      setDownVoteCount(newDownVoteCount);
-    } catch (error) {
-      console.error('Error updating upvote:', error);
-    }
-  };
-
-  const handleDownVote = async () => {
-    try {
-      let newDownVoteCount = downVoteCount;
-      let newUpVoteCount = upVoteCount;
-
-      if (hasVoted === 'down') {
-        // If the user has already downvoted, undo the downvote
-        newDownVoteCount -= 1;
-        setHasVoted(null);
-      } else {
-        // If the user is upvoting or has not voted
-        newDownVoteCount += 1;
-        if (hasVoted === 'up') {
-          newUpVoteCount -= 1; // Remove the upvote
-        }
-        setHasVoted('down');
-      }
-
-      await updatePost({
-        postId: post?._id!, // Pass the post ID
-        postData: {
-          ...post,
-          upVoteCount: newUpVoteCount,
-          downVoteCount: newDownVoteCount,
-        },
-        isVoting: true,
-      });
-      setUpVoteCount(newUpVoteCount);
-      setDownVoteCount(newDownVoteCount);
-    } catch (error) {
-      console.error('Error updating downvote:', error);
-    }
-  };
+    },
+    [hasVoted, upVoteCount, downVoteCount, post, updatePost]
+  );
 
 
-  const handleAddComment = async () => {
+  const handleAddComment = useCallback(async () => {
     if (!newComment.trim()) return;
-
     try {
       const postId = post?._id;
       const commentatorId = user?._id;
       const comment = newComment.trim();
 
-      console.log('Post ID:', postId);
-      console.log('Commentator ID:', commentatorId);
-      console.log('Comment:', comment);
+      const data = {
+        commentatorId: commentatorId,
+        comment: comment
+      }
 
-      // const response = await addComment(post._id, newComment);
+      await addCommentToPost(postId, data);
 
-      // setComments([...comments, response]);
+      console.log('Post ID:', postId, data);
     } catch (error) {
       console.error('Error adding comment:', error);
     }
-  };
+  }, [newComment, post?._id, user?._id]);
 
   const handleEditComment = (comment: string) => {
     console.log(comment)
@@ -147,45 +127,77 @@ export const PostDetailsCard: React.FC<PostCardProps> = ({ post }) => {
   };
 
 
-  const handleSharePost = async () => {
+
+  // const handleSharePost = async () => {
+  //   try {
+  //     const postUrl = `${window.location.origin}/post/${post._id}`;
+
+  //     await navigator.clipboard.writeText(postUrl);
+
+  //     // Open the Popover
+  //     setIsPopoverOpen(true);
+
+  //     // Automatically close after 2 seconds
+  //     setTimeout(() => {
+  //       setIsPopoverOpen(false);
+  //     }, 2000);
+
+  //   } catch (error) {
+  //     console.error("Error copying post URL:", error);
+  //   }
+  // };
+
+
+
+  // console.log({ isFavorite }, { isPostSaved }, { isPostRemoved })
+
+  // const handleClick = (postId: string) => {
+  //   toggleFavoritePost(postId); // Update the state in Zustand
+
+  //   const data = {
+  //     postId: postId,
+  //   }
+
+  //   if (isFavorite || isPostSaved) {
+  //     removedPost(data);
+  //     setIsPostSaved(false)
+  //     setIsPostRemoved(true)
+  //     // console.log(isFavorite, isPostSaved, isPostRemoved)
+
+  //   } else {
+  //     savedPost(data);
+  //     setIsPostSaved(true)
+  //     setIsPostRemoved(false)
+  //     // console.log(isFavorite, isPostSaved, isPostRemoved)
+  //   }
+  // };
+  
+  const handleSharePost = useCallback(async () => {
     try {
       const postUrl = `${window.location.origin}/post/${post._id}`;
 
       await navigator.clipboard.writeText(postUrl);
-      // alert('Post URL copied to clipboard!');
+      setIsPopoverOpen(true);
+      setTimeout(() => setIsPopoverOpen(false), 2000);
     } catch (error) {
       console.error('Error copying post URL:', error);
     }
-  };
-
-  console.log({ isFavorite }, { isPostSaved }, { isPostRemoved })
-
-
-  const handleClick = (postId: string) => {
-    toggleFavoritePost(postId); // Update the state in Zustand
-
-    const data = {
-      postId: postId,
-    }
-    // console.log(`Post clicked: ${postId}`);
-    console.log(isFavorite, isPostSaved, isPostRemoved)
+  }, [post._id]);
+  
+  const handleClick = useCallback((postId: string) => {
+    toggleFavoritePost(postId);
+    const data = { postId };
 
     if (isFavorite || isPostSaved) {
-      // handleRemovedPost(postId); // Remove post if already saved
       removedPost(data);
-      setIsPostSaved(false)
-      setIsPostRemoved(true)
-      console.log(isFavorite, isPostSaved, isPostRemoved)
-
+      setIsPostSaved(false);
+      setIsPostRemoved(true);
     } else {
-      // handleSavePost(postId); // Save post if not saved
       savedPost(data);
-      setIsPostSaved(true)
-      setIsPostRemoved(false)
-      console.log(isFavorite, isPostSaved, isPostRemoved)
+      setIsPostSaved(true);
+      setIsPostRemoved(false);
     }
-  };
-
+  }, [isFavorite, isPostSaved, removedPost, savedPost, toggleFavoritePost]);
 
   return (
     <div className="group max-w-5xl mx-auto mt-10 border border-gray-300 dark:border-gray-700 rounded-2xl">
@@ -199,13 +211,44 @@ export const PostDetailsCard: React.FC<PostCardProps> = ({ post }) => {
       <div className="p-4 sm:p-6 transition-all duration-300 rounded-b-2xl">
         <div className="flex flex-row items-start sm:items-center justify-between mb-3">
           <div className="flex items-center mb-2 sm:mb-0">
-            <button
+            {/* <button
               aria-label={`View posts by ${post.authorId?.name || 'Unknown Author'}`}
               className="text-gray-800 dark:text-white text-lg mr-2 hover:underline"
               onClick={handleAuthorClick}
             >
               {post.authorId?.name || 'Unknown Author'}
-            </button>
+            </button> */}
+              {user ? (
+                <div
+                  className="text-gray-800 dark:text-white text-lg mr-2 hover:underline"
+                  role="button"
+                  tabIndex={0}
+                  onClick={handleAuthorClick}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      handleAuthorClick();
+                    }
+                  }}
+                >
+                  {post.authorId?.name || 'Unknown Author'}
+                </div>
+              ) : (
+                <Popover color="foreground" placement="top" showArrow={true}>
+                  <Tooltip color="foreground" content="Share Post">
+                    <PopoverTrigger
+                      className="text-gray-800 dark:text-white text-lg mr-2 hover:underline"
+                      onClick={handleAuthorClick}
+                    >
+                      {post.authorId?.name || 'Unknown Author'}
+                    </PopoverTrigger>
+                  </Tooltip>
+                  <PopoverContent>
+                    <div className="px-1 py-2">
+                      <div className="text-small font-bold">Please log in to view profile!</div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              )}
             <span className="text-blue-500 text-sm">
               {new Intl.DateTimeFormat('en-US', {
                 month: 'short',
@@ -231,7 +274,7 @@ export const PostDetailsCard: React.FC<PostCardProps> = ({ post }) => {
                 <Tooltip color="foreground" content={isPostSaved ? 'Unsave Post' : 'Save Post'}>
                   <button
                     aria-label="Save post"
-                    onClick={() => handleClick(post?._id!)} 
+                    onClick={() => handleClick(post?._id!)}
                   >
                     {isPostRemoved ? (
                       // Show empty heart icon if the post is removed
@@ -245,21 +288,21 @@ export const PostDetailsCard: React.FC<PostCardProps> = ({ post }) => {
                     )}
                   </button>
                 </Tooltip>
-
               )
             )}
-            <Popover color='foreground' placement="top" showArrow={true}>
+            <Popover color='foreground' placement="top" showArrow={true} >
               <Tooltip color='foreground' content='Share Post'>
                 <PopoverTrigger>
                   <Share className='cursor-pointer' onClick={handleSharePost} />
                 </PopoverTrigger>
               </Tooltip>
-              <PopoverContent>
-                <div className="px-1 py-2">
-                  <div className="text-small font-bold">Post Copied</div>
-                  {/* <div className="text-tiny">This is the popover content</div> */}
-                </div>
-              </PopoverContent>
+              {isPopoverOpen && (
+                <PopoverContent>
+                  <p>
+                    Link copied!
+                  </p>
+                </PopoverContent>
+              )}
             </Popover>
           </div>
         </div>
@@ -286,7 +329,8 @@ export const PostDetailsCard: React.FC<PostCardProps> = ({ post }) => {
               className={`flex items-center text-gray-700 cursor-pointer ${hasVoted === 'up' ? 'text-blue-600' : ''
                 } ${!user ? 'cursor-not-allowed text-gray-400' : ''}`}
               disabled={!user} // Disable button if no user
-              onClick={user ? handleUpVote : undefined} // Prevent onClick if no user
+              // onClick={user ? handleUpVote : undefined} 
+              onClick={() => handleVote('up')}// Prevent onClick if no user
             >
               <ChevronUp className={`${user ? 'text-blue-500' : 'text-gray-400'}`} />
               <span className="ml-1 dark:text-white font-normal">{upVoteCount}</span>
@@ -298,7 +342,8 @@ export const PostDetailsCard: React.FC<PostCardProps> = ({ post }) => {
               className={`flex items-center text-gray-700 cursor-pointer ${hasVoted === 'down' ? 'text-red-600' : ''}
               ${!user ? 'cursor-not-allowed text-gray-400' : ''}`}
               disabled={!user} // Disable button if no user
-              onClick={handleDownVote}
+              // onClick={handleDownVote}
+              onClick={() => handleVote('down')}
             >
               <ChevronDown className="text-red-500" />
               <span className="ml-1 dark:text-white font-normal">{downVoteCount}</span>
