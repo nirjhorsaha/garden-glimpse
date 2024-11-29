@@ -1,58 +1,36 @@
-/* eslint-disable prettier/prettier */
 'use client'
+
 import { useState } from "react";
-import { Image } from "@nextui-org/react";
-import { ChevronUp, ChevronDown } from "lucide-react";
+import { Image, Tooltip } from "@nextui-org/react";
+import { ChevronUp, ChevronDown, MessageSquareText } from "lucide-react";
 import { useRouter } from "next/navigation";
-
-import { useUser } from "@/src/context/user.provider";
-
-import { IPost } from "../../types";
 import toast from "react-hot-toast";
 
+import { useUserStore } from "@/src/lib/zustand/userStore";
+
+import { IPost } from "../../types";
 
 interface PostCardProps {
     post: IPost;
 }
 
 export const PostCard: React.FC<PostCardProps> = ({ post }) => {
-    const [isModalOpen, setModalOpen] = useState(false);
-
-    const handleEditSubmit = async (data: IPost) => {
-        // Here, you'd typically call your API to update the post with the new data
-        console.log('Updating post with data:', data);
-        // Call your API endpoint to update the post
-        // Example: await updatePostAPI(post.id, data);
-
-        // After successful update, you may want to refresh the post data or provide feedback
-        setModalOpen(false); // Close the modal after submission
-    };
-
-
-    // console.log(post.authorId)
     const [isExpanded, setIsExpanded] = useState(false);
-    const router = useRouter(); // Initialize router
-    const { user } = useUser()
-
-    // console.log('Premium check: ', post.isPremium);
-    // console.log('Profile veify check: ', user?.profileVerified);
-
+    const router = useRouter(); 
+    const user = useUserStore((state) => state.user);
 
     const toggleContent = () => {
         setIsExpanded(!isExpanded);
     };
 
     const handleCardClick = () => {
-      // Check if the post is premium and user is not verified
-      if (post.isPremium && !user?.profileVerified) {
-        // Show toast message
-        toast.error(
-          'You need to verify your profile to access premium content.',
-        );
-      } else {
-        // Navigate to post details
-        router.push(`/post/${post._id}`);
-      }
+        if (post.isPremium && !user?.profileVerified) {
+            // Show toast with a unique id for profile verification
+            toast.error('You need to verify your profile to access premium content.', { id: 'verification-error' });
+        } else {
+            // If the user is logged in and has access
+            router.push(`/post/${post._id}`);
+        }
     };
 
 
@@ -63,10 +41,16 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
         : post.content;
 
     return (
-        <p
+        <div
             className="group w-full border border-gray-300 dark:border-gray-700 rounded-2xl p-4 lg:p-6 flex flex-col md:flex-row items-start md:gap-6"
-            // type="button"
-            // onClick={handleCardClick}
+            role="button" // Indicates that this div acts as a button
+            tabIndex={0}  // Makes the div focusable and keyboard-navigable
+            onClick={handleCardClick}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === 'Space') {
+                    handleCardClick(); // Trigger click action on Enter or Space
+                }
+            }}
         >
 
             {/* Left Side Content */}
@@ -78,36 +62,21 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
                             >
                                 {post?.authorId?.name || "Unknown Author"}
                             </span>
-                             {/* {post.upVoteCount >= 1 && (
-                                <ShieldCheck className="text-blue-600 mr-4 size-5" />
-                            )}  */}
-                             <span className="text-indigo-600 font-medium">
+
+                            <span className="text-blue-500 text-sm">
                                 {new Intl.DateTimeFormat('en-US', {
                                     month: 'short',
                                     day: '2-digit',
                                     year: 'numeric',
                                 }).format(new Date(post?.createdAt))}
-                            </span> 
+                            </span>
                         </div>
-                     
+
                         {post.isPremium && (
                             <span className="bg-yellow-500 text-white font-medium text-xs px-2.5 py-0.5 rounded-full">
                                 Premium
                             </span>
                         )}
-                           {/* Conditionally render the edit modal based on the author ID */}
-                           {/* {post.authorId?._id === user?.userId && (
-                            <>
-                                <Edit size={16} className="mr-1" />
-                                <PostCreateModal
-                                    post={post}
-                                    onSubmit={handleEditSubmit}
-                                    isOpen={isModalOpen}
-                                    onOpenChange={() => setModalOpen(!isModalOpen)}
-                                />
-                            </>
-                        )} */}
-
                     </div>
                 </div>
                 <h4 className="text-xl text-gray-900 dark:text-white font-medium leading-8 mb-5 text-left">
@@ -123,7 +92,6 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
                                 {post.content?.length > MAX_CHARACTERS && (
                                     <button
                                         className="text-blue-500 hover:underline"
-                                        // onClick={toggleContent}
                                         onClick={handleCardClick}
                                     >
                                         See more
@@ -142,18 +110,32 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
                     )}
                 </div>
 
-                <div className="flex items-center space-x-2">
-                    <p className="text-left bg-zinc-300 dark:bg-slate-600 px-2 inline-block rounded-full">
+                <div className="flex items-center space-x-2 mb-4 md:mb-0">
+                    <p className="text-left bg-zinc-300 dark:bg-slate-600 px-2 inline-block rounded-full mr-2">
                         {post.category}
                     </p>
-                    <span className="flex items-center text-gray-700">
-                        <ChevronUp className="text-blue-500" />
-                        <span className="ml-1 dark:text-white font-normal">{post.upVoteCount || 0}</span>
-                    </span>
-                    <span className="flex items-center text-gray-700">
-                        <ChevronDown className="text-red-500" />
-                        <span className="ml-1 dark:text-white font-normal">{post.downVoteCount || 0}</span>
-                    </span>
+
+                    <Tooltip content="Upvote">
+                        <span className="flex items-center text-gray-700">
+                            <ChevronUp className="text-blue-500" />
+                            <span className="ml-1 dark:text-white font-normal">{post.upVoteCount || 0}</span>
+                        </span>
+                    </Tooltip>
+                    
+                    <Tooltip content="Downvote">
+                        <span className="flex items-center text-gray-700">
+                            <ChevronDown className="text-red-500" />
+                            <span className="ml-1 dark:text-white font-normal">{post.downVoteCount || 0}</span>
+                        </span>
+                    </Tooltip>
+
+                    <Tooltip content="Comments">
+                        <span className="flex items-center text-gray-700">
+                            <MessageSquareText className="text-blue-500" />
+                            <span className="ml-1 dark:text-white font-normal">{post?.comments?.filter(comment => !comment.isDeleted).length || 0}</span>
+                        </span>
+                    </Tooltip>
+
                 </div>
             </div>
 
@@ -165,6 +147,6 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
                     src={post.images?.[0] || "/fallback-image.jpg"}
                 />
             </div>
-        </p>
+        </div>
     );
 };
