@@ -11,26 +11,23 @@ export default function Post() {
     const [activeCategory, setActiveCategory] = useState<string>("For you");
 
     const { data: post, isLoading } = useGetAllPosts(activeCategory);
-
-    if (isLoading) return <Spinner />;
-
+    
     const posts = post?.data?.result as IPost[];
-
+    
     const postCategories = posts ? ["For you", ...Array.from(new Set(posts.map((post) => post.category)))] : [];
-
+    
     const handleCategoryClick = (category: string) => {
-        // console.log("Clicked category:", category); 
-        setActiveCategory(category); 
-
+        setActiveCategory(category);
     };
-
+    
     // Filter posts by active category (if any)
     const filteredPosts = activeCategory === "For you"
-        ? posts // Show all posts when "For you" is selected
-        : posts.filter(post => post.category === activeCategory);
-
-    // console.log(filteredPosts)
-
+    ? posts // Show all posts when "For you" is selected
+    : posts.filter(post => post.category === activeCategory);
+    
+    
+    if (isLoading ) return <Spinner />;
+    
     return (
         <section className="py-4">
             <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
