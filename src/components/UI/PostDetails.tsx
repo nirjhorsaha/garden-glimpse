@@ -4,11 +4,11 @@ import { Chip, Image, Tooltip, Popover, PopoverTrigger, PopoverContent } from '@
 import { ChevronUp, ChevronDown, Reply, SendHorizonal, Share, MessageSquareText, } from 'lucide-react';
 import { MdOutlineFavorite, MdFavoriteBorder } from "react-icons/md";
 import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
+import toast from 'react-hot-toast';
 
-import { useDeleteComment, useRemovedPostFromProfile, useSavedPostToProfile, useUpdatePost } from '@/src/hooks/post.hooks';
-import { usePostStore, useUserStore } from '@/src/lib/zustand/userStore';
-import { addCommentToPost } from '@/src/services/AuthServices';
+import { useAddComment, useDeleteComment, useRemovedPostFromProfile, useSavedPostToProfile, useUpdateComment, useUpdatePost } from '@/src/hooks/post.hooks';
+import { useUserStore } from '@/src/lib/zustand/userStore';
 
 import { IComments, IPost } from '../../types';
 import DeletePostModal from '../Modal/DeletePostModal';
@@ -21,14 +21,14 @@ interface PostCardProps {
 export const PostDetailsCard: React.FC<PostCardProps> = ({ post }) => {
   const router = useRouter();
   const user = useUserStore((state) => state.user);
-  // const { posts, addPost, updatePostDetails } = usePostStore(); 
-
-  // const [updatedContent, setUpdatedContent] = useState<string>(''); 
 
   const { mutate: savedPost, } = useSavedPostToProfile();
   const { mutate: removedPost, } = useRemovedPostFromProfile();
   const { mutate: updatePost, } = useUpdatePost();
+  const { mutate: addComment, } = useAddComment();
   const { mutate: deleteComment, } = useDeleteComment();
+  const { mutate: updateComment } = useUpdateComment();
+
 
   const [hasVoted, setHasVoted] = useState<'up' | 'down' | null>(null); // Track user's vote
   const [upVoteCount, setUpVoteCount] = useState(post?.upVoteCount || 0);
@@ -37,6 +37,8 @@ export const PostDetailsCard: React.FC<PostCardProps> = ({ post }) => {
   const [isPostSaved, setIsPostSaved] = useState(false); // Track if the post is saved
   const [isPostRemoved, setIsPostRemoved] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
+  const [updatedCommentText, setUpdatedCommentText] = useState<string>('');
 
   const favoritePostIds = user?.favouritePosts || [];
   const isFavorite = favoritePostIds.includes(post?._id); // Check if the current post is a favorite
@@ -127,7 +129,7 @@ export const PostDetailsCard: React.FC<PostCardProps> = ({ post }) => {
       };
 
       // Add the new comment to the post
-      await addCommentToPost(postId, data);
+      await addComment({ postId, data });
 
       // Update the comments list by adding the new comment
       const newCommentData = {
@@ -141,49 +143,41 @@ export const PostDetailsCard: React.FC<PostCardProps> = ({ post }) => {
       setNewComment(''); // Clear the input field after submitting the comment
       post?.comments && post.comments.push(newCommentData); // Update the comments array with the new comment
 
-      // const updatedComments = [...(post.comments || []), newCommentData];
-
-      // updatePostDetails({
-      //   ...post,
-      //   comments: updatedComments,
-      // });
-
-      // console.log('Updated comments from store:', updatedComments);
-
-
     } catch (error) {
       console.error('Error adding comment:', error);
     }
   }, [newComment, post?._id, user?._id]);
 
 
-  const handleEditComment = (comment: string) => {
-    console.log(comment)
+  const handleEditComment = async (comment: string) => {
+    const editedComment = await comment
+
+    console.log(editedComment)
   };
 
 
   const handleDeleteComment = async (commentId: string) => {
-    console.log(commentId)
     const postId = post?._id;
-  
+
     if (!postId) {
       console.error("Post ID is undefined");
+
       return; // Exit early if postId is undefined
     }
-  
+
     try {
       await deleteComment({ postId, commentId });
-      setNewComment(""); 
+      setNewComment("");
 
       // Update the post's comments list locally
       const updatedComments = post?.comments?.filter((comment: IComments) => comment._id !== commentId);
-      post.comments = updatedComments; 
-      
+
+      post.comments = updatedComments;
+
     } catch (error) {
       console.error("Failed to delete comment:", error);
     }
   };
-  
 
 
   const handleSharePost = useCallback(async () => {
@@ -194,9 +188,47 @@ export const PostDetailsCard: React.FC<PostCardProps> = ({ post }) => {
       setIsPopoverOpen(true);
       setTimeout(() => setIsPopoverOpen(false), 2000);
     } catch (error) {
-      console.error('Error copying post URL:', error);
+      toast.error('Error copying post URL');
     }
   }, [post?._id]);
+
+
+
+  // Handle Edit button click
+  const handleEditCommentClick = (commentId: string, currentText: string) => {
+    setEditingCommentId(commentId);
+    setUpdatedCommentText(currentText);
+  };
+
+  // Save the updated comment
+  const handleSaveEditedComment = async (commentId: string) => {
+    try {
+      if (!updatedCommentText.trim()) return;
+
+      const postId = post?._id;
+
+      if (!postId) {
+        console.error("Post ID is undefined");
+
+        return; // Exit early if postId is undefined
+      }
+      const comment = updatedCommentText.trim();
+      const commentatorId = user?._id
+
+
+      updateComment({ postId, commentId, commentatorId, comment })
+
+      // Update the comment locally
+      // const updatedComments = post?.comments?.map((comment) =>
+      //   comment._id === commentId ? { ...comment, comment: updatedCommentText.trim() } : comment
+      // );
+
+      // post.comments = updatedComments; // Update comments list in post object
+      setEditingCommentId(null); // Reset editing state
+    } catch (error) {
+      console.error('Error updating comment:', error);
+    }
+  };
 
 
   const handleClick = useCallback((postId: string) => {
@@ -411,65 +443,103 @@ export const PostDetailsCard: React.FC<PostCardProps> = ({ post }) => {
         )}
 
         {/* Comments List */}
-        <div className="mt-8">
-          <h5 className="font-medium text-xl leading-8 mb-4">Comments</h5>
-
-          {post?.comments && (
+        {post?.comments && post.comments.length >= 1 && (
+          <div className="mt-8">
+            <h5 className="font-medium text-xl leading-8 mb-4">Comments</h5>
             <div className="space-y-4">
-              {post?.comments
-                .filter((comment: IComments) => !comment?.isDeleted).slice()
-                .reverse().map((comment: IComments) => (
-                  <div
-                    key={comment?._id}
-                    className="flex flex-row gap-x-4 gap-y-4 w-full mb-7 border dark:border-0 rounded-lg p-2"
-                  >
+              {post?.comments?.
+                filter((comment: IComments) => !comment?.isDeleted).slice()
+                .reverse().map((comment) => (
+                  <div key={comment._id} className="border-b pb-4 flex items-start space-x-4 relative border dark:border-0 rounded-lg p-2">
+                    {/* Commentator's Image */}
                     <Image
-                      alt={comment?.commentatorId?.profileImage}
+                      alt="Commentator"
                       className="h-14 w-14 object-cover"
-                      src={comment?.commentatorId?.profileImage} />
+                      src={comment.commentatorId?.profileImage || 'https://i.ibb.co.com/zrTFyr2/demo-user.jpg'} // Fallback to default image
+                    />
 
-                    <div className="data w-full">
-                      <div className="flex items-center justify-between w-full mb-2">
-                        <div>
-                          <button
-                            aria-label={`View posts by ${comment?.commentatorId?.name}`}
-                            className="text-gray-800 dark:text-white font-medium text-xl leading-8 mr-2 hover:underline"
-                            onClick={() => router.push(`/author/${comment?.commentatorId?._id}`)}
-                          >
-                            {comment?.commentatorId?.name}
-                          </button>
+                    <div className="flex-1">
+                      {/* Date at the Top */}
+                      <div className="text-sm text-gray-500 mb-1">
+                        <div className='flex flex-row justify-between'>
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-2">
+                            <button
+                              aria-label={`View posts by ${comment?.commentatorId?.name}`}
+                              className="text-gray-800 dark:text-white font-medium text-xl leading-8 hover:underline text-left"
+                              onClick={() => router.push(`/author/${comment?.commentatorId?._id}`)}
+                            >
+                              {comment?.commentatorId?.name}
+                            </button>
 
-                          <p className="text-blue-500 text-sm leading-6">
-                            {new Intl.DateTimeFormat('en-US', {
-                              month: 'short',
-                              day: '2-digit',
-                              year: 'numeric',
-                            }).format(new Date(comment?.commentatorId?.createdAt!))}
-                          </p>
+                            <span className="text-blue-500 text-sm sm:mt-0 mt-1">
+                              {new Date(comment?.createdAt).toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric',
+                              })}
+                            </span>
+                          </div>
+                          {/* Tooltip with Reply Icon positioned in the top-right corner */}
+                          <Tooltip className=" " color="primary" content="Reply">
+                            <Reply className="cursor-pointer" />
+                          </Tooltip>
                         </div>
-                        <Tooltip color='primary' content='Reply'>
-                          <Reply className='cursor-pointer' />
-                        </Tooltip>
                       </div>
-                      <p className="text-base leading-7 mb-1">
-                        {comment?.comment}
-                      </p>
 
-                      {comment?.commentatorId?._id === user?._id && (
-                        <div className="flex space-x-2">
-                          <Chip className='cursor-pointer' color='default'
-                            onClick={() => handleEditComment(comment.comment)}>Edit</Chip>
-                          <Chip className='cursor-pointer text-red-500' color='default'
-                            onClick={() => handleDeleteComment(comment?._id)}>Delete</Chip>
+
+                      {/* Editable Comment Section */}
+                      {editingCommentId === comment._id ? (
+                        <div>
+                          <textarea
+                            className="w-full bg-gray-50 dark:bg-slate-800 rounded-lg p-2"
+                            value={updatedCommentText}
+                            onChange={(e) => setUpdatedCommentText(e.target.value)}
+                          />
+                          <div className="flex justify-end space-x-2 mt-2">
+                            <button
+                              className="text-sm bg-green-500 text-white px-4 py-1 rounded"
+                              onClick={() => handleSaveEditedComment(comment._id)}
+                            >
+                              Save
+                            </button>
+                            <button
+                              className="text-sm bg-red-500 text-white px-4 py-1 rounded"
+                              onClick={() => setEditingCommentId(null)}
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div>
+                          {/* Display Comment Text */}
+                          <p className="text-base leading-7 mb-1">{comment?.comment}</p>
+
+                          {/* Actions */}
+                          {comment.commentatorId?._id === user?._id && (
+                            <div className="flex space-x-4">
+                              <button
+                                className="text-blue-500 text-sm hover:underline"
+                                onClick={() => handleEditCommentClick(comment._id, comment.comment)}
+                              >
+                                Edit
+                              </button>
+                              <button
+                                className="text-red-500 text-sm hover:underline"
+                                onClick={() => handleDeleteComment(comment?._id)}
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          )}
                         </div>
                       )}
-
                     </div>
                   </div>
                 ))}
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
