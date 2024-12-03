@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
 
@@ -10,7 +9,7 @@ type Role = keyof typeof roleBasedRoutes;
 
 // Routes accessible by regular users & admin users
 const roleBasedRoutes = {
-    user: [/^\/profile/, /^\/post/,],
+    user: [/^\/profile/],
     admin: [/^\/admin/],
 };
 
@@ -20,8 +19,9 @@ export async function middleware(request: NextRequest) {
 
     // console.log({pathname});
 
-    const user = await getCurrentUser();
-    // console.log({user})
+    const userData = await getCurrentUser();
+    const user = userData?.data
+    // console.log('middleware user', user)
 
     if (!user) {
         if (AuthRoutes.includes(pathname)) {
@@ -48,5 +48,5 @@ export async function middleware(request: NextRequest) {
 
 // Routes to apply the middleware
 export const config = {
-    matcher: ["/profile", "/post/:page*", "/admin", "/login", "/register"],
+    matcher: ["/profile", "/admin", "/login", "/register"],
 };
