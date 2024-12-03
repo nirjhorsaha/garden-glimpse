@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 declare module 'lucide-react' {
   import { SVGProps } from 'react';
 
@@ -23,7 +22,14 @@ declare module 'lucide-react' {
   export const Bookmark: (props: LucideProps) => JSX.Element;
   export const Trash2: (props: LucideProps) => JSX.Element;
   export const LayoutDashboard: (props: LucideProps) => JSX.Element;
-  export const LayoutDashboard: (props: LucideProps) => JSX.Element;
+  export const Eye: (props: LucideProps) => JSX.Element;
   export const HelpCircle: (props: LucideProps) => JSX.Element;
   export const Leaf: (props: LucideProps) => JSX.Element;
+  export const MessageSquareText: (props: LucideProps) => JSX.Element;
+  export const Reply: (props: LucideProps) => JSX.Element;
+  export const SendHorizonal: (props: LucideProps) => JSX.Element;
+  export const Recycle: (props: LucideProps) => JSX.Element;
+  export const BadgeCheck: (props: LucideProps) => JSX.Element;
+  export const BookmarkCheck: (props: LucideProps) => JSX.Element;
+  export const Share: (props: LucideProps) => JSX.Element;
 }
