@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import "@/src/styles/globals.css";
 import { Metadata, Viewport } from "next";
 import clsx from "clsx";
