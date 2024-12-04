@@ -1,5 +1,3 @@
-/* eslint-disable prettier/prettier */
-/* eslint-disable no-console */
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -12,26 +10,23 @@ import { useRouter } from 'next/navigation';
 import { useResetPassword } from '@/src/hooks/auth.hooks';
 
 const ResetPasswordPage = () => {
-  const router = useRouter(); // Initialize useRouter
-  const { mutate: handleResetPassword, isPending, isSuccess, isError } = useResetPassword();
-
-  // const [email, setEmail] = useState('');
   const [token, setToken] = useState('');
+  const [isVisible, setIsVisible] = useState(false);
+  const [error, setError] = useState('');
 
-  // useEffect(() => {
-  //   const searchParams = new URLSearchParams(window.location.search);
+  const toggleVisibility = () => setIsVisible(!isVisible);
 
-  //   setEmail(searchParams.get('email') || '');
-  //   setToken(searchParams.get('token') || '');
-  // }, []);
+  const router = useRouter();
+
+  const { mutate: handleResetPassword, isPending, isSuccess, isError } = useResetPassword();
 
   const {
     control,
     handleSubmit,
     formState: { errors },
-    reset: resetModalForm, // Get the reset function from useForm
+    reset: resetModalForm,
   } = useForm<FieldValues>({
-    defaultValues: { email: '' }, // Pre-fill email
+    defaultValues: { email: '' },
   });
 
   useEffect(() => {
@@ -48,20 +43,13 @@ const ResetPasswordPage = () => {
   }, [resetModalForm]);
 
 
-  const [isVisible, setIsVisible] = useState(false);
-  const [error, setError] = useState('');
-  // const [loading, setLoading] = useState(false); // Loading state
-
-  const toggleVisibility = () => setIsVisible(!isVisible);
-
-
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     // setLoading(true); // Set loading to true
     setError(''); // Reset any previous error
 
 
     try {
-      const response = await handleResetPassword({
+      await handleResetPassword({
         userEmail: data.email,
         newPassword: data.password,
         accessToken: token,
@@ -70,11 +58,8 @@ const ResetPasswordPage = () => {
       // Clear form fields
       resetModalForm({ email: '', password: '' });
 
-      console.log('Reset Data:', response);
-
     } catch (err) {
-      setError('Failed to reset password. Please try again.'); // Set error message on failure
-      console.error('Error resetting password:', err);
+      setError('Failed to reset password. Please try again.');
     } finally {
       // setLoading(false); // Reset loading state
     }
