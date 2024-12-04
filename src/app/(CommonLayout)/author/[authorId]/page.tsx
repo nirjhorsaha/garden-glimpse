@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { AuthorDetails } from '@/src/components/UI/AuthorDetails';
 import { PostCard } from '@/src/components/UI/Postcard';
 import {
@@ -17,20 +16,17 @@ export default async function page({ params: { authorId } }: IProps) {
   const { data: author }: { data: IUser } = await getSingleUser(authorId);
 
   const { data: authorPosts } = await getAuthorPost(authorId);
-  // console.log(authorPosts);
-
-  // console.log(author);
 
   return (
     <div className="my-3 flex flex-col  md:flex-row w-full gap-12">
       <div className="w-full md:w-2/5">
-        <AuthorDetails key={author.userId} author={author} />
+        <AuthorDetails key={author?.userId} author={author} />
       </div>
       <h1 className="w-4/5 mt-10">
         <div className="grid grid-cols-1 gap-y-8 md:grid-cols-1 lg:grid-cols-1 lg:gap-x-8">
           {authorPosts?.length ? (
             authorPosts.map((authorPosts: IPost) => (
-              <PostCard key={authorPosts._id} post={authorPosts} />
+              <PostCard key={authorPosts?._id} post={authorPosts} />
             ))
           ) : (
             <p>No posts available</p>
