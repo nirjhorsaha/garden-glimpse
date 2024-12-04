@@ -1,7 +1,7 @@
 // Displays the main heading and subtitle for the landing page using styled title and subtitle components.
 "use client"
 
-import { subtitle, title } from "../../../config/primitives";
+import { subtitle, title } from "@/src/components/primitives";
 
 export default function Landing() {
   return (
