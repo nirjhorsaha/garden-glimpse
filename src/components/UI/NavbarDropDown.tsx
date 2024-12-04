@@ -1,6 +1,3 @@
-/* eslint-disable prettier/prettier */
-/* eslint-disable import/order */
-// eslint-disable-next-line prettier/prettier
 "use client"
 
 import {
@@ -9,24 +6,20 @@ import {
   DropdownMenu,
   DropdownTrigger,
 } from "@nextui-org/dropdown";
-
 import { usePathname, useRouter } from "next/navigation";
 import { Avatar } from "@nextui-org/avatar";
-import { User, Settings, LogOut, LayoutDashboard } from 'lucide-react';
+import { User, LogOut, LayoutDashboard } from 'lucide-react';
+
 import { logout } from "@/src/services/AuthServices";
 import { useUser } from "@/src/context/user.provider";
 import { protectedRoutes } from "@/src/constant";
-// import { Button } from "@nextui-org/button";
-import { useDisclosure } from "@nextui-org/react";
 
 export default function NavbarDropdown() {
   const router = useRouter();
   const pathname = usePathname();
-  const { user, setIsLoading: userLoading } = useUser()
-  console.log(user)
+  const { user: userData, setIsLoading: userLoading } = useUser()
 
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
-
+  const user = (userData as any)?.data
 
   const handleNavigation = (pathname: string) => {
     router.push(pathname);
@@ -67,14 +60,6 @@ export default function NavbarDropdown() {
             Profile
           </DropdownItem>
         )}
-        {/* <DropdownItem startContent={<Settings size={16} />} onClick={() => handleNavigation("/settings")}>
-          Settings
-        </DropdownItem> */}
-
-        {/* <DropdownItem startContent={<Plus size={16} />} onClick={() => handleNavigation("/create-post")}>
-          Create Post
-        </DropdownItem> */}
-
         <DropdownItem
           key="delete"
           className="text-danger"

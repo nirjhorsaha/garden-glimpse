@@ -6,7 +6,7 @@ import { Edit, ShieldCheck } from 'lucide-react';
 
 import { useUserStore } from "@/src/lib/zustand/userStore";
 
-import PostCreateModal from "../PostCreateModal";
+import PostCreateModal from "../../Modal/PostCreateModal";
 import EditNameModal from "../../Modal/EditProfileModal";
 
 import { SidebarOptions } from "./SidebarOptions";
