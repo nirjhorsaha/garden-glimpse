@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 
 import { PostCard } from "@/src/components/UI/Postcard";
 import { getMyPosts } from "@/src/services/PostService/getMyPost";
@@ -15,7 +14,7 @@ export default async function MyPostPage() {
             <PostCard key={post._id} post={post} />
           ))
         ) : (
-          <p>No posts available</p>
+          <p>No posts available.!</p>
         )}
       </div>
     </>
