@@ -3,16 +3,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 
 import { IPost } from '../types';
-import {
-  addCommentToPost,
-  createPost,
-  deleteCommentToPost,
-  deletePost,
-  removeSavedPost,
-  savedPost,
-  updateCommentToPost,
-  updatePost,
-} from '../services/AuthServices';
+import { addCommentToPost, createPost, deleteCommentToPost, deletePost, removeSavedPost, savedPost, updateCommentToPost, updatePost } from '../services/Post';
+
 
 // Hook for creating a post
 export const useCreatePost = () => {

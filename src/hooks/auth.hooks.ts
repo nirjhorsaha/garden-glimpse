@@ -1,13 +1,12 @@
-/* eslint-disable prettier/prettier */
 /* eslint-disable no-console */
 
 import { useMutation } from "@tanstack/react-query";
 import { FieldValues } from "react-hook-form";
 import toast from "react-hot-toast";
 
-import { loginUser, registerUser } from "../services/AuthServices";
+import { forgetPassword, loginUser, registerUser, resetPassword, updateUserProfile } from "../services/AuthServices";
 
-// Custom hook for handling user registration.
+// Hook for handling user registration.
 export const useUserRegistration = () => {
   return useMutation<any, Error, FieldValues>({
     mutationKey: ["USER_REGISTRATION"],
@@ -22,7 +21,7 @@ export const useUserRegistration = () => {
   });
 };
 
-// Custom hook for handling user login.
+// Hook for handling user login.
 export const useUserLogin = () => {
   return useMutation<any, Error, FieldValues>({
     mutationKey: ["USER_LOGIN"],
@@ -37,3 +36,49 @@ export const useUserLogin = () => {
   });
 };
 
+// Hook for updating user profile .
+export const useUserProfileUpdate = () => {
+  return useMutation < {userData: any
+}>({
+    mutationKey: ['USER_UPDATE_PROFILE'],
+    mutationFn: async(userData) => await updateUserProfile(userData),  
+    onSuccess: (data) => {
+      console.log('Updated Profile Data:', data);
+      toast.success('Profile updated successfully!');
+    },
+    onError: (error) => {
+      console.error(error);
+      toast.error(error.message || 'Failed to update profile.');
+    },
+  });
+};
+
+// Hook for sending a password reset link.
+export const useForgetPassword = () => {
+  return useMutation<any, Error, FieldValues>({
+    mutationKey: ["FORGOT_PASSWORD"],
+    mutationFn: async (userData) => await forgetPassword(userData),
+    onSuccess: () => {
+      toast.success("Password reset link has been sent to your email.");
+    },
+    onError: (error) => {
+      console.error(error.message);
+      toast.error("Failed to send password reset link. Please try again.");
+    },
+  });
+};
+
+// Hook for resetting passwords.
+export const useResetPassword = () => {
+  return useMutation<any, Error, FieldValues>({
+    mutationKey: ["RESET_PASSWORD"],
+    mutationFn: async (userData) => await resetPassword(userData),
+    onSuccess: () => {
+      toast.success("Password reset successful. You can now log in with your new password.");
+    },
+    onError: (error) => {
+      console.error(error.message);
+      toast.error("Failed to reset password. Please try again.");
+    },
+  });
+};
