@@ -1,38 +1,55 @@
-/* eslint-disable prettier/prettier */
+'use server';
 
 import { cookies } from 'next/headers';
 
 import envConfig from '@/src/config/envConfig';
+import axiosInstance from '@/src/lib/AxiosInstance';
 
 export const getMyPosts = async () => {
   const accessToken = cookies().get('accessToken')?.value;
 
-  const res = await fetch(`${envConfig.baseApi}/post/user/my-post`, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
+  const { data } = await axiosInstance.get(
+    `${envConfig.baseApi}/post/user/my-post`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
     },
-  });
+  );
 
-  return res.json();
+  return data;
 };
 
 export const getAuthorPost = async (userId: string) => {
-  const res = await fetch(`${envConfig.baseApi}/post/user/${userId}`, {});
+  try {
+    const res = await axiosInstance.get(
+      `${envConfig.baseApi}/post/user/${userId}`,
+      {},
+    );
 
-  return res.json();
+    return res.data;
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
 };
 
 export const getMyFavouritePosts = async () => {
   const accessToken = cookies().get('accessToken')?.value;
-  console.log(accessToken)
 
-  const res = await fetch(`${envConfig.baseApi}/users/favorite-posts`, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
+  try {
+    const res = await axiosInstance.get(
+      `${envConfig.baseApi}/users/post/favorite-posts`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    );
 
-  return res.json();
+    return res.data;
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
 };
 
 export const getSingleUser = async (userId: string) => {

@@ -1,8 +1,9 @@
-
 import envConfig from '@/src/config/envConfig';
 
 export const getAllPosts = async (category?: string) => {
-  const query = category ? `?category=${category}` : ''; // If a category is provided, filter by it
+
+  // If a category is provided, filter by it category
+  const query = category ? `?category=${category}` : ''; 
   
   const fetchOption = {
     next: {
@@ -21,9 +22,6 @@ export const getAllPosts = async (category?: string) => {
 };
 
 
-
-
-
 export const getAllUsers = async () => {
   const fetchOption = {
     next: {
@@ -35,6 +33,7 @@ export const getAllUsers = async () => {
 
   return res.json();
 };
+
 
 export const getSinglePost = async (postId: string) => {
 
