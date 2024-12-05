@@ -174,7 +174,7 @@ export const updateUserProfile = async (data: any) => {
     );
 
     if (!res.ok) {
-      console.error('Profile update failed: ', res.statusText);
+      // console.error('Profile update failed: ', res.statusText);
       throw new Error('Failed to update profile');
     }
 
@@ -188,7 +188,7 @@ export const updateUserProfile = async (data: any) => {
     // Optionally, you can return the updated profile data here
     return updatedData;
   } catch (error: any) {
-    console.error('Error updating profile: ', error);
+    // console.error('Error updating profile: ', error);
     throw new Error(error.message || 'Something went wrong');
   }
 };
