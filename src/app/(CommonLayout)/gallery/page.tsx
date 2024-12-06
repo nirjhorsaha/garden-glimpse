@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import { Image } from '@nextui-org/react';
-import { motion } from 'framer-motion'; 
+import { motion } from 'framer-motion';
 
 import { variants } from '@/src/constant';
 
@@ -53,14 +53,14 @@ const Gallery = () => {
 
 
   return (
-    <div className='pt-8 px-6'>
+    <div className='pt-8 '>
       <div className="w-full mx-auto">
         <div className="flex items-center justify-center flex-col gap-5 mb-4">
           <motion.h2
             animate="visible"
             className="font-manrope font-bold text-4xl text-center"
             initial="hidden"
-            transition={{ duration: 0.5 }} 
+            transition={{ duration: 0.5 }}
             variants={variants}>
             Exploring Nature&apos;s Beauty
           </motion.h2>
@@ -68,7 +68,7 @@ const Gallery = () => {
             animate="visible"
             className="text-lg font-normal text-gray-500 max-w-4xl mx-auto text-center"
             initial="hidden"
-            transition={{ duration: 0.5, delay: 0.2 }} 
+            transition={{ duration: 0.5, delay: 0.2 }}
             variants={variants}>
             Discover the art of gardening and the beauty of nature in our curated gallery.
           </motion.p>
@@ -77,9 +77,9 @@ const Gallery = () => {
           {galleryItems.map((item, index) => (
             <motion.div
               key={index}
-              animate={{ opacity: 1, y: 0 }} 
-              className={`bg-cover rounded-lg ${item.colSpan} flex justify-end flex-col px-7 py-6`}
-              initial={{ opacity: 0, y: 20 }} 
+              animate={{ opacity: 1, y: 0 }}
+              className={`bg-cover rounded-lg ${item.colSpan} flex justify-end flex-col px-4 py-6`}
+              initial={{ opacity: 0, y: 20 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
               <Image
