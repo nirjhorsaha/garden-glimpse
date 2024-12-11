@@ -32,7 +32,6 @@ const categories = [
 
 interface PostCreateModalProps {
   post?: IPost;
-  // onSubmit?: (data: IPost) => Promise<void>;
 }
 
 export default function PostUpdateModal({ post }: PostCreateModalProps) {

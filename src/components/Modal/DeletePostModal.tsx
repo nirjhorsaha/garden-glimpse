@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import {
     Modal,
     ModalContent,
@@ -23,23 +22,23 @@ interface DeletePostModalProps {
 export default function DeletePostModal({ postId }: DeletePostModalProps) {
     const { mutate: deletePost, isPending, isSuccess } = useDeletePost();
     const router = useRouter();
-    
-    const { isOpen, onOpen, onOpenChange } = useDisclosure(); 
+
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
     const handleDelete = () => {
         deletePost(postId);
-        onOpenChange(); 
+        onOpenChange();
     };
 
-    if (!isPending && isSuccess) { 
+    if (!isPending && isSuccess) {
         router.push('/profile/my-post')
     }
 
     return (
         <>
-            { isPending && <Loading/>  }
+            {isPending && <Loading />}
             <Tooltip color='danger' content='Delete Post'>
-                <Trash2 className="text-red-600 cursor-pointer" size={23} onClick={onOpen}/>
+                <Trash2 className="text-red-600 cursor-pointer" size={23} onClick={onOpen} />
             </Tooltip>
             <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
                 <ModalContent>

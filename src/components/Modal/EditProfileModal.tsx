@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input } from '@nextui-org/react';
 import { FieldValues, SubmitHandler, useForm, Controller, } from 'react-hook-form';
 import { useEffect, useState } from 'react';
@@ -6,8 +5,6 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 
 import { useUser } from '@/src/context/user.provider';
-// import { updateUserProfile } from '@/src/services/AuthServices';
-// import { useQueryClient } from '@tanstack/react-query';
 import { useUserProfileUpdate } from '@/src/hooks/auth.hooks';
 import { useUserStore } from '@/src/lib/zustand/userStore';
 
@@ -72,7 +69,7 @@ const EditNameModal: React.FC<EditNameModalProps> = ({ isOpen, onClose }) => {
               onChange(file); // Update the form value
             }
           } catch (error) {
-            console.error('Error uploading image:', error);
+            // console.error('Error uploading image:', error);
             toast.error('Error uploading image. Please try again.');
           }
         } else {
@@ -90,7 +87,7 @@ const EditNameModal: React.FC<EditNameModalProps> = ({ isOpen, onClose }) => {
     try {
       mutate(updatedProfile as any); 
 
-      updateUserState(data); 
+      updateUserState(updatedProfile); 
 
       onClose(); // Close modal after success
     } catch (error) {
