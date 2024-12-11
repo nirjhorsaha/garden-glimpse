@@ -1,14 +1,14 @@
 'use client';
 
-import { Chip, Image, Tooltip, Popover, PopoverTrigger, PopoverContent } from '@nextui-org/react';
+import { Image, Tooltip, Popover, PopoverTrigger, PopoverContent, Button, Avatar } from '@nextui-org/react';
 import { ChevronUp, ChevronDown, Reply, SendHorizonal, Share, MessageSquareText, } from 'lucide-react';
 import { MdOutlineFavorite, MdFavoriteBorder } from "react-icons/md";
 import { useRouter } from 'next/navigation';
 import { useCallback, useState } from 'react';
 import toast from 'react-hot-toast';
 
-import { useAddComment, useDeleteComment, useRemovedPostFromProfile, useSavedPostToProfile, useUpdateComment, useUpdatePost } from '@/src/hooks/post.hooks';
 import { useUserStore } from '@/src/lib/zustand/userStore';
+import { useAddComment, useDeleteComment, useRemovedPostFromProfile, useSavedPostToProfile, useUpdateComment, useUpdatePost } from '@/src/hooks/post.hooks';
 
 import { IComments, IPost } from '../../types';
 import DeletePostModal from '../Modal/DeletePostModal';
@@ -44,12 +44,6 @@ export const PostDetailsCard: React.FC<PostCardProps> = ({ post }) => {
   const isFavorite = favoritePostIds.includes(post?._id); // Check if the current post is a favorite
 
   const { toggleFavoritePost } = useUserStore();
-
-  // useEffect(() => {
-  //   console.log("Post being added:", post);
-
-  //   addPost(post); 
-  // }, [post, addPost]);
 
 
   const handleAuthorClick = useCallback(() => {
@@ -100,11 +94,6 @@ export const PostDetailsCard: React.FC<PostCardProps> = ({ post }) => {
           },
           isVoting: true,
         });
-        // updatePostDetails({
-        //   ...post,
-        // upVoteCount: newUpVoteCount,
-        // downVoteCount: newDownVoteCount,
-        // });
 
         setUpVoteCount(newUpVoteCount);
         setDownVoteCount(newDownVoteCount);
@@ -123,12 +112,8 @@ export const PostDetailsCard: React.FC<PostCardProps> = ({ post }) => {
       const commentatorId = user?._id;
       const comment = newComment.trim();
 
-      const data = {
-        commentatorId: commentatorId,
-        comment: comment,
-      };
+      const data = { commentatorId, comment };
 
-      // Add the new comment to the post
       await addComment({ postId, data });
 
       // Update the comments list by adding the new comment
@@ -140,20 +125,13 @@ export const PostDetailsCard: React.FC<PostCardProps> = ({ post }) => {
         createdAt: new Date(),
       };
 
-      setNewComment(''); // Clear the input field after submitting the comment
       post?.comments && post.comments.push(newCommentData); // Update the comments array with the new comment
+      setNewComment(''); // Clear the input field after submitting the comment
 
     } catch (error) {
       console.error('Error adding comment:', error);
     }
   }, [newComment, post?._id, user?._id]);
-
-
-  const handleEditComment = async (comment: string) => {
-    const editedComment = await comment
-
-    console.log(editedComment)
-  };
 
 
   const handleDeleteComment = async (commentId: string) => {
@@ -207,23 +185,14 @@ export const PostDetailsCard: React.FC<PostCardProps> = ({ post }) => {
 
       const postId = post?._id;
 
-      if (!postId) {
-        console.error("Post ID is undefined");
+      if (!postId) return;
 
-        return; // Exit early if postId is undefined
-      }
       const comment = updatedCommentText.trim();
       const commentatorId = user?._id
 
-
       updateComment({ postId, commentId, commentatorId, comment })
 
-      // Update the comment locally
-      // const updatedComments = post?.comments?.map((comment) =>
-      //   comment._id === commentId ? { ...comment, comment: updatedCommentText.trim() } : comment
-      // );
-
-      // post.comments = updatedComments; // Update comments list in post object
+    
       setEditingCommentId(null); // Reset editing state
     } catch (error) {
       console.error('Error updating comment:', error);
@@ -258,13 +227,6 @@ export const PostDetailsCard: React.FC<PostCardProps> = ({ post }) => {
       <div className="p-4 sm:p-6 transition-all duration-300 rounded-b-2xl">
         <div className="flex flex-row items-start sm:items-center justify-between mb-3">
           <div className="flex items-center mb-2 sm:mb-0">
-            {/* <button
-              aria-label={`View posts by ${post.authorId?.name || 'Unknown Author'}`}
-              className="text-gray-800 dark:text-white text-lg mr-2 hover:underline"
-              onClick={handleAuthorClick}
-            >
-              {post.authorId?.name || 'Unknown Author'}
-            </button> */}
             {user ? (
               <div
                 className="text-gray-800 dark:text-white text-lg mr-2 hover:underline"
@@ -451,15 +413,15 @@ export const PostDetailsCard: React.FC<PostCardProps> = ({ post }) => {
                 filter((comment: IComments) => !comment?.isDeleted).slice()
                 .reverse().map((comment) => (
                   <div key={comment._id} className="border-b pb-4 flex items-start space-x-4 relative border dark:border-0 rounded-lg p-2">
-                    {/* Commentator's Image */}
-                    <Image
-                      alt="Commentator"
-                      className="h-14 w-14 object-cover"
+                    <Avatar
+                      // alt="Commentator" 
+                      showFallback
+                      className="h-14 w-14 object-cover border" 
+                      radius="lg"
                       src={comment.commentatorId?.profileImage || 'https://i.ibb.co.com/zrTFyr2/demo-user.jpg'} // Fallback to default image
                     />
 
                     <div className="flex-1">
-                      {/* Date at the Top */}
                       <div className="text-sm text-gray-500 mb-1">
                         <div className='flex flex-row justify-between'>
                           <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-2">
@@ -479,9 +441,8 @@ export const PostDetailsCard: React.FC<PostCardProps> = ({ post }) => {
                               })}
                             </span>
                           </div>
-                          {/* Tooltip with Reply Icon positioned in the top-right corner */}
                           <Tooltip className=" " color="primary" content="Reply">
-                            <Reply className="cursor-pointer" />
+                            <Reply className="cursor-pointer dark:text-white"/>
                           </Tooltip>
                         </div>
                       </div>
@@ -496,23 +457,24 @@ export const PostDetailsCard: React.FC<PostCardProps> = ({ post }) => {
                             onChange={(e) => setUpdatedCommentText(e.target.value)}
                           />
                           <div className="flex justify-end space-x-2 mt-2">
-                            <button
-                              className="text-sm bg-green-500 text-white px-4 py-1 rounded"
+                            <Button
+                              color='success'
+                              size='sm'
                               onClick={() => handleSaveEditedComment(comment._id)}
                             >
                               Save
-                            </button>
-                            <button
-                              className="text-sm bg-red-500 text-white px-4 py-1 rounded"
+                            </Button>
+                            <Button
+                              color='danger'
+                              size='sm'
                               onClick={() => setEditingCommentId(null)}
                             >
                               Cancel
-                            </button>
+                            </Button>
                           </div>
                         </div>
                       ) : (
                         <div>
-                          {/* Display Comment Text */}
                           <p className="text-base leading-7 mb-1">{comment?.comment}</p>
 
                           {/* Actions */}
