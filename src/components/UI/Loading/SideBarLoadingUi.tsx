@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 'use client';
 
 import { Skeleton } from '@nextui-org/react';
@@ -8,7 +7,7 @@ const SidebarLoadingUI = () => {
     <div className="rounded-2xl max-w-sm h-screen overflow-hidden">
       <div className="rounded-xl bg-gray-700 p-5 shadow-lg hover:shadow-xl transition-shadow duration-300 h-full flex flex-col">
         {/* Image Skeleton */}
-        <div className="relative w-full h-32 mb-5">
+        <div className="relative w-full h-48 mb-5">
           <Skeleton className="w-full h-full rounded-xl" />
         </div>
 
