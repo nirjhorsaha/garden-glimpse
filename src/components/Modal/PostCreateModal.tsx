@@ -20,9 +20,9 @@ import { FieldValues, SubmitHandler } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
 import { IPost } from '@/src/types';
-import { useUser } from '@/src/context/user.provider';
 import { useCreatePost } from '@/src/hooks/post.hooks';
 import { categories } from '@/src/constant';
+import { useUserStore } from '@/src/lib/zustand/userStore';
 
 
 interface PostCreateModalProps {
@@ -33,9 +33,9 @@ export default function PostCreateModal({
   post,
 }: PostCreateModalProps) {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
-  const { control, handleSubmit, reset } = useForm();
+  const { control, handleSubmit, reset,  formState: { errors }  } = useForm();
   const [imageURLs, setImageURLs] = useState<string[]>([]);
-  const { user } = useUser();
+  const user = useUserStore((state) => state.user);
   
   const { mutate: handleCreatePost } = useCreatePost();
 
@@ -88,7 +88,7 @@ export default function PostCreateModal({
 
   const handleFormSubmit: SubmitHandler<FieldValues> = async (data) => {
     const postData = {
-      authorId: user?.userId || '', 
+      authorId: user?._id || '', 
       title: data.title || '', 
       content: data.content || '', 
       category: data.category || '', 
@@ -96,14 +96,11 @@ export default function PostCreateModal({
       isPremium: data.premium || false,
     };
 
-    console.log(postData)
     try {
-      // handleCreatePost(postData);
-      toast.success('Post created successfully!');
+      handleCreatePost(postData);
       onClose(); // Close modal after successful submission
     } catch (error) {
-      // console.error('Error creating post:', error);
-      toast.error('Error creating post. Please try again.');
+      throw new Error('Error creating post. Please try again.');
     }
   };
 
@@ -139,14 +136,19 @@ export default function PostCreateModal({
                     control={control}
                     name="title"
                     render={({ field }) => (
-                      <Input
-                        {...field}
-                        aria-required="true"
-                        className="mb-4"
-                        label="Title"
-                        placeholder="Enter post title"
-                        variant="bordered"
-                      />
+                      <>
+                        <Input
+                          {...field}
+                          aria-required="true"
+                          className="mb-4"
+                          label="Title"
+                          placeholder="Enter post title"
+                          variant="bordered"
+                        />
+                        {errors.title && (
+                          <div className="text-red-500 text-sm mb-1">Title is required</div>
+                        )}
+                      </>
                     )}
                     rules={{ required: true }}
                   />
@@ -154,15 +156,20 @@ export default function PostCreateModal({
                     control={control}
                     name="content"
                     render={({ field }) => (
-                      <Textarea
-                        {...field}
-                        aria-required="true"
-                        className="mb-4"
-                        label="Content"
-                        placeholder="Enter post content"
-                        rows={4}
-                        variant="bordered"
-                      />
+                      <>
+                        <Textarea
+                          {...field}
+                          aria-required="true"
+                          className="mb-4"
+                          label="Content"
+                          placeholder="Enter post content"
+                          rows={4}
+                          variant="bordered"
+                        />
+                        {errors.content && (
+                          <div className="text-red-500 text-sm mb-1">Content is required</div>
+                        )}
+                      </>
                     )}
                     rules={{ required: true }}
                   />
@@ -170,6 +177,7 @@ export default function PostCreateModal({
                     control={control}
                     name="category"
                     render={({ field }) => (
+                      <>
                       <Select
                         {...field}
                         aria-required="true"
@@ -183,6 +191,10 @@ export default function PostCreateModal({
                           </SelectItem>
                         ))}
                       </Select>
+                      {errors.category && (
+                        <div className="text-red-500 text-sm mb-1">Category is required</div>
+                      )}
+                    </>
                     )}
                     rules={{ required: true }}
                   />
@@ -190,15 +202,22 @@ export default function PostCreateModal({
                     control={control}
                     name="image"
                     render={({ field: { onChange } }) => (
+                      <>
                       <Input
                         accept="image/*"
                         className="mb-4"
                         label="Upload Image"
                         type="file"
                         variant="bordered"
-                        onChange={handleImageChange(onChange)}
+                        onChange={handleImageChange(onChange)} // Handle file change
                       />
+                      {errors.image && (
+                        <div className="text-red-500 text-sm mb-1">Image is required</div> // Error message for image
+                      )}
+                    </>
                     )}
+                    rules={{ required: true }}
+
                   />
                   <Controller
                     control={control}
