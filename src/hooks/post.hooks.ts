@@ -1,6 +1,6 @@
-
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
+import { FieldValues } from 'react-hook-form';
 
 import { IPost } from '../types';
 import { addCommentToPost, createPost, deleteCommentToPost, deletePost, removeSavedPost, savedPost, updateCommentToPost, updatePost } from '../services/Post';
@@ -8,7 +8,7 @@ import { addCommentToPost, createPost, deleteCommentToPost, deletePost, removeSa
 
 // Hook for creating a post
 export const useCreatePost = () => {
-  return useMutation<any, Error, FormData, { toastId: string }>({
+  return useMutation<any, Error, FieldValues, { toastId: string }>({
     mutationKey: ['posts'],
     mutationFn: async (postData) => await createPost(postData),
     onMutate: () => {

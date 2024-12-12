@@ -21,7 +21,7 @@ interface IUserProviderValues {
     isLoading: boolean;
     setUser: (user: IUser | null) => void;
     setIsLoading: Dispatch<SetStateAction<boolean>>;
-}
+}  
 
 const UserProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<IUser | null>(null);
@@ -29,13 +29,12 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
 
     const handleUser = async () => {
         const user = await getCurrentUser();
-        // console.log(user)
 
         if (user) {
             useUserStore.getState().setUser(user.data);
-            console.log('User from store', user.data);
+            // console.log('User from store', user.data);
         }
-        
+
         setUser(user);
         setIsLoading(false);
     };
