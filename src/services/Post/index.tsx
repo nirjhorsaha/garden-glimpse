@@ -2,19 +2,20 @@
 
 import { cookies } from 'next/headers';
 import { revalidateTag } from 'next/cache';
+import { FieldValues } from 'react-hook-form';
 
 import axiosInstance from '@/src/lib/AxiosInstance';
 import { IPost } from '@/src/types';
 import envConfig from '@/src/config/envConfig';
 
 // Creates a new post with form data.
-export const createPost = async (formData: FormData): Promise<any> => {
+export const createPost = async (postData: FieldValues): Promise<any> => {
     // console.log(formData);
 
     const accessToken = cookies().get('accessToken')?.value;
 
     try {
-        const { data } = await axiosInstance.post('/post/create-post', formData, {
+        const { data } = await axiosInstance.post('/post/create-post', postData, {
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${accessToken}`,
