@@ -3,9 +3,9 @@ import { create } from 'zustand';
 import { IPost } from '@/src/types';
 
 interface UserState {
-  user: Record<string, any> | null; // This allows any object or null
+  user: Record<string, any> | null; 
   setUser: (user: Record<string, any> | null) => void;
-  updateUserProfile: (updatedData: Record<string, any>) => void; // Updated to be more flexible
+  updateUserProfile: (updatedData: Record<string, any>) => void; 
   toggleFavoritePost: (postId: string) => void;
 }
 
@@ -42,7 +42,7 @@ export const useUserStore = create<UserState>((set) => ({
       };
       
       // updated user state
-      console.log("Updated user state:", updatedUser);
+      // console.log("Updated user state:", updatedUser);
 
       return { user: updatedUser };
     }),
@@ -60,7 +60,6 @@ export const usePostStore = create<PostStore>((set) => ({
       ),
     })),
 
-  
   removePost: (postId) =>
     set((state) => ({
       posts: state.posts.filter((post) => post._id !== postId),
