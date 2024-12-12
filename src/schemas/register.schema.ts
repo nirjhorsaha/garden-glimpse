@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { z } from "zod";
 
 // Zod schema for validating registration data
