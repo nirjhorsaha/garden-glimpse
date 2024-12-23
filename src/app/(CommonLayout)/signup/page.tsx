@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 /* eslint-disable no-console */
 
 "use client";
@@ -13,7 +12,6 @@ import { EyeIcon, EyeOffIcon, MailIcon, User, Phone, MapPin, Loader } from "luci
 import axios from "axios";
 import toast from "react-hot-toast";
 import { motion } from 'framer-motion';
-
 
 import registerValidationSchema from "@/src/schemas/register.schema";
 import envConfig from "@/src/config/envConfig";
@@ -117,9 +115,9 @@ export default function RegisterPage() {
         variants={variants}
       >Register </motion.h3>
       <motion.p animate="visible"
-       className="mb-4 max-w-lg text-center"
-       initial="hidden"
-       transition={{ duration: 0.5,delay: 0.2 }}
+        className="mb-4 max-w-lg text-center"
+        initial="hidden"
+        transition={{ duration: 0.5, delay: 0.2 }}
         variants={variants}
       >Discover and share gardening tips with a vibrant community of gardening enthusiasts.</motion.p>
       <div className="w-full max-w-md">
@@ -128,10 +126,10 @@ export default function RegisterPage() {
           onSubmit={handleSubmit(onSubmit)}>
 
           <motion.div animate="visible"
-          className="py-3"
-          initial="hidden"
-          transition={{ duration: 0.5,delay: 0.4 }}
-           variants={variants}>
+            className="py-3"
+            initial="hidden"
+            transition={{ duration: 0.5, delay: 0.4 }}
+            variants={variants}>
             <Controller
               control={control}
               name="name"
@@ -159,10 +157,10 @@ export default function RegisterPage() {
           </motion.div>
 
           <motion.div animate="visible"
-          className="py-3"
-          initial="hidden"
-          transition={{ duration: 0.5,delay: 0.6 }}
-           variants={variants}>
+            className="py-3"
+            initial="hidden"
+            transition={{ duration: 0.5, delay: 0.6 }}
+            variants={variants}>
             <Controller
               control={control}
               name="email"
@@ -190,10 +188,10 @@ export default function RegisterPage() {
           </motion.div>
 
           <motion.div animate="visible"
-          className="py-3"
-          initial="hidden"
-          transition={{ duration: 0.5,delay: 0.8 }}
-           variants={variants}>
+            className="py-3"
+            initial="hidden"
+            transition={{ duration: 0.5, delay: 0.8 }}
+            variants={variants}>
             <Controller
               control={control}
               name="password"
@@ -232,9 +230,9 @@ export default function RegisterPage() {
           </motion.div>
 
           <motion.div animate="visible"
-          className="py-3"
-          initial="hidden"
-          transition={{ duration: 0.5,delay: 1.0 }}
+            className="py-3"
+            initial="hidden"
+            transition={{ duration: 0.5, delay: 1.0 }}
             variants={variants}
           >
             <Controller
@@ -264,9 +262,9 @@ export default function RegisterPage() {
           </motion.div>
 
           <motion.div animate="visible"
-          className="py-3"
-          initial="hidden"
-          transition={{ duration: 0.5,delay: 1.2 }}
+            className="py-3"
+            initial="hidden"
+            transition={{ duration: 0.5, delay: 1.2 }}
             variants={variants}>
             <Controller
               control={control}
@@ -295,9 +293,9 @@ export default function RegisterPage() {
           </motion.div>
 
           <motion.div animate="visible"
-          className="py-3"
-          initial="hidden"
-          transition={{ duration: 0.5,delay: 1.4 }}
+            className="py-3"
+            initial="hidden"
+            transition={{ duration: 0.5, delay: 1.4 }}
             variants={variants}>
             <label className="block mb-1 font-semibold" htmlFor="profileImage">
               Profile Picture
@@ -327,9 +325,9 @@ export default function RegisterPage() {
           </motion.div>
 
           <motion.div
-          animate="visible"
-          initial="hidden"
-          transition={{ duration: 0.5,delay: 1.6 }}
+            animate="visible"
+            initial="hidden"
+            transition={{ duration: 0.5, delay: 1.6 }}
             variants={variants}>
             <Button
               className="my-3 w-full rounded-md bg-default-900 font-semibold text-default"
@@ -346,9 +344,9 @@ export default function RegisterPage() {
         </form>
 
         <motion.div animate="visible"
-        className="text-center"
-        initial="hidden"
-        transition={{ duration: 0.5,delay: 1.8 }}
+          className="text-center"
+          initial="hidden"
+          transition={{ duration: 0.5, delay: 1.8 }}
           variants={variants}>
           Already have an account? {" "} <span className="font-bold bg-gradient-to-r from-sky-500 from-30% to-green-500 to-70% inline-block text-transparent bg-clip-text"><Link href={"/login"}>Login</Link></span>
         </motion.div>
