@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import React, { useEffect, useRef } from 'react';
 import Quill from 'quill';
 import 'quill/dist/quill.snow.css';
@@ -27,6 +26,7 @@ const QuillEditor: React.FC<QuillEditorProps> = ({ value, onChange }) => {
 
             editorRef.current.on('text-change', () => {
                 const content = editorRef.current?.root.innerHTML || '';
+
                 onChange(content); // Call onChange to update the value in the form
             });
 

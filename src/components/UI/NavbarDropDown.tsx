@@ -47,13 +47,15 @@ export default function NavbarDropdown() {
       <DropdownMenu aria-label="Static Actions">
         {user?.role === "admin" ? (
           <DropdownItem
+            key={1}
             startContent={<LayoutDashboard size={16} />}
             onClick={() => handleNavigation("/admin-dashboard")}
           >
             Dashboard
           </DropdownItem>
         ) : (
-          <DropdownItem
+            <DropdownItem
+              key={1}
             startContent={<User size={16} />}
             onClick={() => handleNavigation("/profile")}
           >
